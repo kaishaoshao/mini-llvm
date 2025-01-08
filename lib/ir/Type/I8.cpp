@@ -9,5 +9,5 @@
 using namespace mini_llvm::ir;
 
 std::unique_ptr<Constant> I8::zeroValue() const {
-    return std::make_unique<I8Constant>(static_cast<uint8_t>(0));
+    return std::make_unique<I8Constant>(static_cast<int8_t>(0));
 }
