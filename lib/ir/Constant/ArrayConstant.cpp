@@ -42,10 +42,18 @@ ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::s
     }
 }
 
-std::string ArrayConstant::format() const {
-    if (std::ranges::all_of(elements(*this), [](const Use<Constant> &element) {
+namespace {
+
+bool isZeroInitializer(const ArrayConstant &C) {
+    return std::ranges::all_of(elements(C), [](const Use<Constant> &element) {
         return *element == *element->type()->zeroValue();
-    })) {
+    });
+}
+
+} // namespace
+
+std::string ArrayConstant::format() const {
+    if (isZeroInitializer(*this)) {
         return "zeroinitializer";
     }
     if (*static_cast<const ArrayType *>(&*type())->elementType() == I8()) {
