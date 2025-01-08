@@ -4,7 +4,6 @@
 #include <cassert>
 #include <memory>
 #include <queue>
-#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -53,7 +52,7 @@ public:
 
     void operator()() {
         for (const Alloca *v : vars_) {
-            defs_[v].push(nullptr);
+            defs_.emplace(v, nullptr);
         }
         dfs(root_);
     }
@@ -62,30 +61,28 @@ private:
     const DominatorTreeNode *root_;
     const std::unordered_set<const Alloca *> &vars_;
     const std::unordered_map<const Phi *, const Alloca *> &phis_;
-    std::unordered_map<const Alloca *, std::stack<const Value *>> defs_;
+    std::unordered_map<const Alloca *, const Value *> defs_;
 
     void dfs(const DominatorTreeNode *node) {
-        for (const Alloca *v : vars_) {
-            defs_[v].push(defs_[v].top());
-        }
+        std::unordered_map<const Alloca *, const Value *> oldDefs = defs_;
         for (const Instruction &I : *node->block) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (phis_.contains(phi)) {
                     const Alloca *v = phis_.at(phi);
-                    defs_[v].top() = phi;
+                    defs_[v] = phi;
                 }
             }
             if (auto *store = dynamic_cast<const Store *>(&I)) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars_.contains(v)) {
-                        defs_[v].top() = &*store->value();
+                        defs_[v] = &*store->value();
                     }
                 }
             }
             if (auto *load = dynamic_cast<const Load *>(&I)) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
                     if (vars_.contains(v)) {
-                        const Value *value = defs_[v].top();
+                        const Value *value = defs_[v];
                         assert(value != nullptr);
                         replaceAllUsesWith(*load, share(*const_cast<Value *>(value)));
                     }
@@ -97,7 +94,7 @@ private:
                 if (auto *phi = dynamic_cast<Phi *>(&I)) {
                     if (phis_.contains(phi)) {
                         const Alloca *v = phis_.at(phi);
-                        const Value *value = defs_[v].top();
+                        const Value *value = defs_[v];
                         if (value != nullptr) {
                             phi->putIncoming(*node->block, share(*const_cast<Value *>(value)));
                         } else {
@@ -110,9 +107,7 @@ private:
         for (const DominatorTreeNode *child : node->children) {
             dfs(child);
         }
-        for (const Alloca *v : vars_) {
-            defs_[v].pop();
-        }
+        defs_ = oldDefs;
     }
 };
 
