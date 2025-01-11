@@ -93,7 +93,8 @@ struct std::formatter<mini_llvm::mc::Program> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::mc::Program &I, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::mc::Program &I, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", I.format());
     }
 };

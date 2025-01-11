@@ -70,7 +70,8 @@ struct std::formatter<mini_llvm::mir::GlobalVar> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::mir::GlobalVar &G, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::mir::GlobalVar &G, FormatContext &ctx) const {
         if (asOperand_) {
             return std::format_to(ctx.out(), "{}", G.formatAsOperand());
         }

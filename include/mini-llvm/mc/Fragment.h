@@ -152,7 +152,8 @@ struct std::formatter<FragmentT> {
         return ctx.begin();
     }
 
-    auto format(const FragmentT &fragment, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const FragmentT &fragment, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", fragment.format());
     }
 };

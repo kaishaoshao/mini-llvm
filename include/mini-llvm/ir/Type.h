@@ -65,7 +65,8 @@ struct std::formatter<TypeT> {
         return ctx.begin();
     }
 
-    auto format(const TypeT &type, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const TypeT &type, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", type.format());
     }
 };

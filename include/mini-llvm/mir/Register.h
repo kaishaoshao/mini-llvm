@@ -28,7 +28,8 @@ struct std::formatter<RegisterT> {
         return ctx.begin();
     }
 
-    auto format(const RegisterT &I, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const RegisterT &I, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", I.format());
     }
 };

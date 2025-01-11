@@ -26,7 +26,8 @@ struct std::formatter<ConstantT> {
         return ctx.begin();
     }
 
-    auto format(const ConstantT &C, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const ConstantT &C, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", C.format());
     }
 };

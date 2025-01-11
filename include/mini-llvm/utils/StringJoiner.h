@@ -48,7 +48,8 @@ struct std::formatter<mini_llvm::StringJoiner> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::StringJoiner &joiner, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::StringJoiner &joiner, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", joiner.toString());
     }
 };

@@ -101,7 +101,8 @@ struct std::formatter<ValueT> {
         return ctx.begin();
     }
 
-    auto format(const ValueT &value, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const ValueT &value, FormatContext &ctx) const {
         if (asOperand_) {
             return std::format_to(ctx.out(), "{}", value.formatAsOperand());
         }

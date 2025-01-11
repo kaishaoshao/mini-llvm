@@ -210,7 +210,8 @@ struct std::formatter<mini_llvm::ir::Module> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::ir::Module &M, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::ir::Module &M, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", M.format());
     }
 };

@@ -35,7 +35,8 @@ struct std::formatter<ImmediateT> {
         return ctx.begin();
     }
 
-    auto format(const ImmediateT &imm, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const ImmediateT &imm, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", imm.format());
     }
 };

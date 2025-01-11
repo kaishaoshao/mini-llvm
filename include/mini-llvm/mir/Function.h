@@ -175,7 +175,8 @@ struct std::formatter<mini_llvm::mir::Function> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::mir::Function &F, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::mir::Function &F, FormatContext &ctx) const {
         if (asOperand_) {
             return std::format_to(ctx.out(), "{}", F.formatAsOperand());
         }

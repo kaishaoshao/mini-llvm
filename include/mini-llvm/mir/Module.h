@@ -232,7 +232,8 @@ struct std::formatter<mini_llvm::mir::Module> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::mir::Module &M, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::mir::Module &M, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", M.format());
     }
 };

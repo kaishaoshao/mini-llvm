@@ -27,7 +27,8 @@ struct std::formatter<LineT> {
         return ctx.begin();
     }
 
-    auto format(const LineT &line, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const LineT &line, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", line.format());
     }
 };

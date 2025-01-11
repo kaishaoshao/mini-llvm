@@ -54,7 +54,8 @@ struct std::formatter<InstructionT> {
         return ctx.begin();
     }
 
-    auto format(const InstructionT &I, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const InstructionT &I, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", I.format());
     }
 };

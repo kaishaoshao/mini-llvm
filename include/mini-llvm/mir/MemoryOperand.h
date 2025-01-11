@@ -52,7 +52,8 @@ struct std::formatter<mini_llvm::mir::MemoryOperand> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::mir::MemoryOperand &op, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::mir::MemoryOperand &op, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", op.format());
     }
 };
