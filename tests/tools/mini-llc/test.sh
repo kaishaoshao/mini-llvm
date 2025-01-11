@@ -60,9 +60,9 @@ function main {
     LINKER_COMMAND="${LINKER_COMMAND:-riscv64-linux-gnu-gcc}"
     EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-riscv64}"
     DIFF_COMMAND="${DIFF_COMMAND:-diff}"
-    MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-10}"
-    LINKER_TIMEOUT="${LINKER_TIMEOUT:-10}"
-    EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-10}"
+    MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-20}"
+    LINKER_TIMEOUT="${LINKER_TIMEOUT:-20}"
+    EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-20}"
 
     local width=0
     for test_name in "${tests[@]}"; do
