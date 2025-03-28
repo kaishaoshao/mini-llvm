@@ -19,8 +19,6 @@
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
-#include "mini-llvm/utils/Status.h"
-#include "mini-llvm/utils/SystemError.h"
 
 using namespace mini_llvm;
 
@@ -144,9 +142,9 @@ int main(int argc, char *argv[]) {
         options.target = target;
     }
 
-    Expected<std::string, SystemError> input = readAll(options.inputFile);
+    Expected<std::string, int> input = readAll(options.inputFile);
     if (!input) {
-        fprintf(stderr, "%s: error: %s: %s\n", argv[0], input.error().call, strerror(input.error().error));
+        fprintf(stderr, "%s: error: %s\n", argv[0], strerror(input.error()));
         exit(1);
     }
 
@@ -179,8 +177,8 @@ int main(int argc, char *argv[]) {
 
     std::string output = program.format() + '\n';
 
-    if (Status status = writeAll(options.outputFile, output); !status) {
-        fprintf(stderr, "%s: error: %s: %s\n", argv[0], status.error().call, strerror(status.error().error));
+    if (int error = writeAll(options.outputFile, output)) {
+        fprintf(stderr, "%s: error: %s\n", argv[0], strerror(error));
         exit(1);
     }
 
