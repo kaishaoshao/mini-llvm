@@ -1,13 +1,13 @@
-#include "mini-llvm/ir_parser/IRParser.h"
+#include "mini-llvm/ir_reader/IRReader.h"
 
 #include <optional>
 #include <vector>
 
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir_parser/Lexer.h"
-#include "mini-llvm/ir_parser/Parser.h"
-#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/ir_reader/Lexer.h"
+#include "mini-llvm/ir_reader/Parser.h"
+#include "mini-llvm/ir_reader/Token.h"
 #include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;

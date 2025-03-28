@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/IRParser.h"
+#include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {

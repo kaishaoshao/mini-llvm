@@ -12,7 +12,7 @@
 
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir_parser/IRParser.h"
+#include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/mc/Program.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 #include "mini-llvm/opt/ir/PassManager.h"

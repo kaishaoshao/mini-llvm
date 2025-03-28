@@ -11,7 +11,7 @@ namespace mini_llvm::ir {
 struct Token {
     enum class Kind {
 #define X(name) k##name,
-#include "mini-llvm/ir_parser/TokenKind.def"
+#include "mini-llvm/ir_reader/TokenKind.def"
 #undef X
     };
 
@@ -27,7 +27,7 @@ inline bool operator==(const Token &lhs, const Token &rhs) {
 inline constexpr const char *name(Token::Kind kind) {
     switch (kind) {
 #define X(name) case Token::Kind::k##name: return #name;
-#include "mini-llvm/ir_parser/TokenKind.def"
+#include "mini-llvm/ir_reader/TokenKind.def"
 #undef X
     default:
         abort();

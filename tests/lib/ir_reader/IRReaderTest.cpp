@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "mini-llvm/ir_parser/IRParser.h"
+#include "mini-llvm/ir_reader/IRReader.h"
 
 using namespace mini_llvm::ir;
 
-TEST(IRParserTest, test00) {
+TEST(IRReaderTest, test00) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -15,7 +15,7 @@ define void @foo() {
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test01) {
+TEST(IRReaderTest, test01) {
     const char *input = R"(
 define internal void @foo() {
 0:
@@ -26,31 +26,31 @@ define internal void @foo() {
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test02) {
+TEST(IRReaderTest, test02) {
     const char *input = "declare void @foo()";
 
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test03) {
+TEST(IRReaderTest, test03) {
     const char *input = "@foo = global i32 42";
 
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test04) {
+TEST(IRReaderTest, test04) {
     const char *input = "@foo = internal global i32 42";
 
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test05) {
+TEST(IRReaderTest, test05) {
     const char *input = "@foo = external global i32";
 
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test06) {
+TEST(IRReaderTest, test06) {
     const char *input = R"(
 @foo = global [2 x [3 x [4 x i32]]] [
     [3 x [4 x i32]] [
@@ -69,7 +69,7 @@ TEST(IRParserTest, test06) {
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test07) {
+TEST(IRReaderTest, test07) {
     const char *input = R"(
 define i32 @foo() {
 0:
@@ -90,7 +90,7 @@ define i32 @foo() {
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test08) {
+TEST(IRReaderTest, test08) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -107,7 +107,7 @@ define void @foo() {
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test09) {
+TEST(IRReaderTest, test09) {
     const char *input = R"(
 define ptr @foo() {
 0:
@@ -118,7 +118,7 @@ define ptr @foo() {
     EXPECT_FALSE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test10) {
+TEST(IRReaderTest, test10) {
     const char *input = R"(
 define ptr @foo() {
 0:
@@ -129,7 +129,7 @@ define ptr @foo() {
     EXPECT_FALSE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test11) {
+TEST(IRReaderTest, test11) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -140,7 +140,7 @@ define void @foo() {
     EXPECT_FALSE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test12) {
+TEST(IRReaderTest, test12) {
     const char *input = R"(
 @foo = global i32 42
 
@@ -153,7 +153,7 @@ define void @foo() {
     EXPECT_FALSE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test13) {
+TEST(IRReaderTest, test13) {
     const char *input = R"(
 define void @foo(i32 %0) {
 1:
@@ -166,7 +166,7 @@ define void @foo(i32 %0) {
     EXPECT_FALSE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test14) {
+TEST(IRReaderTest, test14) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -183,7 +183,7 @@ define void @foo() {
     EXPECT_FALSE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test15) {
+TEST(IRReaderTest, test15) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -197,7 +197,7 @@ declare void @bar(i32, i32, i32)
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test16) {
+TEST(IRReaderTest, test16) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -211,7 +211,7 @@ declare i32 @bar(i32, i32, i32)
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test17) {
+TEST(IRReaderTest, test17) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -229,7 +229,7 @@ define void @foo() {
     EXPECT_TRUE(parseModule(input).has_value());
 }
 
-TEST(IRParserTest, test18) {
+TEST(IRReaderTest, test18) {
     const char *input = R"(
 define void @foo(i1 %0) {
 1:

@@ -1,4 +1,4 @@
-#include "mini-llvm/ir_parser/Lexer.h"
+#include "mini-llvm/ir_reader/Lexer.h"
 
 #include <bit>
 #include <cctype>
@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/ir_reader/Token.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;

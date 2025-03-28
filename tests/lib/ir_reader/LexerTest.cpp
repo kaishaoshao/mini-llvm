@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "mini-llvm/ir_parser/Lexer.h"
-#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/ir_reader/Lexer.h"
+#include "mini-llvm/ir_reader/Token.h"
 
 using namespace mini_llvm::ir;
 

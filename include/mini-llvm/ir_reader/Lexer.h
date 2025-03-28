@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/ir_reader/Token.h"
 
 namespace mini_llvm::ir {
 

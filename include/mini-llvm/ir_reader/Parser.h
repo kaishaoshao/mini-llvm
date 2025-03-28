@@ -16,8 +16,8 @@
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/ir_parser/Symbol.h"
-#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/ir_reader/Symbol.h"
+#include "mini-llvm/ir_reader/Token.h"
 
 namespace mini_llvm::ir {
 

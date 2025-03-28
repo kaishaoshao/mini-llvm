@@ -8,8 +8,8 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Type/ArrayType.h"
 #include "mini-llvm/ir/Type/I32.h"
-#include "mini-llvm/ir_parser/Parser.h"
-#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/ir_reader/Parser.h"
+#include "mini-llvm/ir_reader/Token.h"
 
 using namespace mini_llvm::ir;
 

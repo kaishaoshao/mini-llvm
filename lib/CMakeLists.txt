@@ -37,9 +37,9 @@ add_library(mini-llvm
     ir/Type/Void.cpp
     ir/Use.cpp
     ir/Value.cpp
-    ir_parser/IRParser.cpp
-    ir_parser/Lexer.cpp
-    ir_parser/Parser.cpp
+    ir_reader/IRReader.cpp
+    ir_reader/Lexer.cpp
+    ir_reader/Parser.cpp
     mc/Fragment.cpp
     mc/Instruction.cpp
     mc/Program.cpp

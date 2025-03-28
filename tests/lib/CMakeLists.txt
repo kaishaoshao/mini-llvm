@@ -34,9 +34,9 @@ add_executable(tests
     ir/Instruction/URemTest.cpp
     ir/Instruction/XorTest.cpp
     ir/Instruction/ZExtTest.cpp
-    ir_parser/IRParserTest.cpp
-    ir_parser/LexerTest.cpp
-    ir_parser/ParserTest.cpp
+    ir_reader/IRReaderTest.cpp
+    ir_reader/LexerTest.cpp
+    ir_reader/ParserTest.cpp
     opt/ir/passes/BranchSimplificationTest.cpp
     opt/ir/passes/ConstantFoldingTest.cpp
     opt/ir/passes/DeadCodeEliminationTest.cpp

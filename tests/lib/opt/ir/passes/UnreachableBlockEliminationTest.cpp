@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/IRParser.h"
+#include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 #include "mini-llvm/utils/Memory.h"
