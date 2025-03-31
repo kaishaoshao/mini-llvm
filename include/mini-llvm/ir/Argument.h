@@ -2,13 +2,13 @@
 
 #include <cstdint>
 #include <cstdlib>
-#include <format>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/ToString.h"
 
 namespace mini_llvm::ir {
 
@@ -25,7 +25,7 @@ public:
     }
 
     std::string formatAsOperand() const override {
-        return "%" + (!name().empty() ? name() : std::format("{:x}", reinterpret_cast<uintptr_t>(this)));
+        return "%" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
     }
 
     std::unique_ptr<Value> clone() const override {

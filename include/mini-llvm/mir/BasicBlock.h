@@ -16,6 +16,7 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/ToString.h"
 
 namespace mini_llvm::mir {
 
@@ -160,7 +161,7 @@ public:
     std::string format() const;
 
     std::string formatAsOperand() const {
-        return "#" + (!name().empty() ? name() : std::format("{:x}", reinterpret_cast<uintptr_t>(this)));
+        return "#" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
     }
 
 private:

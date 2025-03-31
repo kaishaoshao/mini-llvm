@@ -3,7 +3,6 @@
 #include <concepts>
 #include <cstdint>
 #include <cstdlib>
-#include <format>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,6 +14,7 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/ToString.h"
 
 namespace mini_llvm::ir {
 
@@ -43,7 +43,7 @@ public:
     virtual void accept(InstructionVisitor &visitor) const = 0;
 
     std::string formatAsOperand() const override {
-        return "%" + (!name().empty() ? name() : std::format("{:x}", reinterpret_cast<uintptr_t>(this)));
+        return "%" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
     }
 
 private:

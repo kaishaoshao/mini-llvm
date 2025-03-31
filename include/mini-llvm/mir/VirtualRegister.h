@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <format>
 #include <string>
 #include <utility>
 
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/ToString.h"
 
 namespace mini_llvm::mir {
 
@@ -20,7 +20,7 @@ public:
     }
 
     std::string format() const override {
-        return "$" + (!name().empty() ? name() : std::format("{:x}", reinterpret_cast<uintptr_t>(this)));
+        return "$" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
     }
 
 private:
