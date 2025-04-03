@@ -38,6 +38,80 @@ using namespace mini_llvm::ir;
 
 namespace {
 
+// Non-Adjacent Form (NAF)
+// https://en.wikipedia.org/wiki/Non-adjacent_form
+
+std::vector<int> computeNAF(uint64_t n) {
+    std::vector<int> naf;
+    while (n) {
+        if (n % 2 == 1) {
+            int d = 2 - static_cast<int>(n % 4);
+            naf.push_back(d);
+            n -= d;
+        } else {
+            naf.push_back(0);
+        }
+        n /= 2;
+    }
+    return naf;
+}
+
+std::vector<std::shared_ptr<Instruction>> replaceMulM1(Value &lhs) {
+    std::vector<std::shared_ptr<Instruction>> replaced;
+
+    replaced.emplace_back(std::make_shared<Sub>(lhs.type()->constant(0), share(lhs)));
+
+    return replaced;
+}
+
+std::vector<std::shared_ptr<Instruction>> replaceMulGeneral(Value &lhs, uint64_t rhs) {
+    std::vector<std::shared_ptr<Instruction>> replaced;
+
+    std::vector<std::pair<std::shared_ptr<Value>, int>> terms;
+    std::vector<int> naf = computeNAF(rhs);
+    if (naf[0] != 0) {
+        terms.emplace_back(share(lhs), naf[0]);
+    }
+    for (size_t i = 1; i < naf.size(); ++i) {
+        if (naf[i] != 0) {
+            std::shared_ptr<Instruction> t = std::make_shared<SHL>(share(lhs), lhs.type()->constant(i));
+            replaced.emplace_back(t);
+            terms.emplace_back(t, naf[i]);
+        }
+    }
+    if (terms[0].second < 0) {
+        terms.emplace(terms.begin(), lhs.type()->constant(0), 1);
+    }
+    if (terms.size() >= 2) {
+        if (terms[1].second > 0) {
+            replaced.emplace_back(std::make_shared<Add>(terms[0].first, terms[1].first));
+        } else {
+            replaced.emplace_back(std::make_shared<Sub>(terms[0].first, terms[1].first));
+        }
+        for (size_t i = 2; i < terms.size(); ++i) {
+            if (terms[i].second > 0) {
+                replaced.emplace_back(std::make_shared<Add>(replaced.back(), terms[i].first));
+            } else {
+                replaced.emplace_back(std::make_shared<Sub>(replaced.back(), terms[i].first));
+            }
+        }
+    }
+
+    return replaced;
+}
+
+std::vector<std::shared_ptr<Instruction>> replaceMul(Value &lhs, uint64_t rhs) {
+    if (rhs == 0 || rhs == 1) {
+        return {};
+    }
+
+    if (rhs == (static_cast<uint64_t>(-1) >> (64 - lhs.type()->sizeInBits()))) { // -1
+        return replaceMulM1(lhs);
+    }
+
+    return replaceMulGeneral(lhs, rhs);
+}
+
 std::vector<std::shared_ptr<Instruction>> replaceMul(const Mul &I) {
     if (!dynamic_cast<const IntegerConstant *>(&*I.rhs())) {
         return {};
@@ -45,33 +119,7 @@ std::vector<std::shared_ptr<Instruction>> replaceMul(const Mul &I) {
 
     uint64_t rhs = static_cast<const IntegerConstant *>(&*I.rhs())->zeroExtendedValue();
 
-    if (rhs == 0 || rhs == 1) {
-        return {};
-    }
-
-    std::vector<std::shared_ptr<Instruction>> replaced;
-
-    std::vector<std::shared_ptr<Value>> terms;
-    std::shared_ptr<Value> lhs = share(*I.lhs());
-    if (rhs & 1) {
-        terms.push_back(lhs);
-    }
-    for (int i = 1; i < 64; ++i) {
-        if ((rhs >> i) & 1) {
-            std::shared_ptr<Instruction> term = std::make_shared<SHL>(lhs, lhs->type()->constant(i));
-            replaced.push_back(term);
-            terms.push_back(term);
-        }
-    }
-    size_t n = terms.size();
-    if (n >= 2) {
-        replaced.push_back(std::make_shared<Add>(terms[0], terms[1]));
-        for (size_t i = 2; i < n; ++i) {
-            replaced.push_back(std::make_shared<Add>(replaced.back(), terms[i]));
-        }
-    }
-
-    return replaced;
+    return replaceMul(*I.lhs(), rhs);
 }
 
 // Torbjorn Granlund and Peter L. Montgomery. 1994. Division by invariant integers using multiplication.
