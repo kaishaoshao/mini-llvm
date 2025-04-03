@@ -127,6 +127,7 @@
 - `NullOperationElimination`
 - `RegisterReuse`
 - `StackOffsetEvaluation`
+- `TailDuplication`
 - `UnreachableBlockElimination`
 - `ZeroRegisterReplacement`
 - `riscv64`

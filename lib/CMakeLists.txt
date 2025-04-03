@@ -81,6 +81,7 @@ add_library(mini-llvm
     opt/mir/passes/NullOperationElimination.cpp
     opt/mir/passes/RegisterReuse.cpp
     opt/mir/passes/StackOffsetEvaluation.cpp
+    opt/mir/passes/TailDuplication.cpp
     opt/mir/passes/UnreachableBlockElimination.cpp
     opt/mir/passes/ZeroRegisterReplacement.cpp
     targets/riscv/codegen/RISCVMCGen.cpp

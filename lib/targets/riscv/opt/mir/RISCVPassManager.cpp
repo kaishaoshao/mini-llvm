@@ -8,6 +8,7 @@
 #include "mini-llvm/opt/mir/passes/NullOperationElimination.h"
 #include "mini-llvm/opt/mir/passes/RegisterReuse.h"
 #include "mini-llvm/opt/mir/passes/StackOffsetEvaluation.h"
+#include "mini-llvm/opt/mir/passes/TailDuplication.h"
 #include "mini-llvm/opt/mir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/mir/passes/ZeroRegisterReplacement.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
@@ -29,7 +30,8 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
         DeadCodeElimination         pass6;
         JumpThreading               pass7;
         BasicBlockMerging           pass8;
-        UnreachableBlockElimination pass9;
+        TailDuplication             pass9(8);
+        UnreachableBlockElimination pass10;
 
         changed |= pass1.runOnModule(M);
         changed |= pass2.runOnModule(M);
@@ -40,6 +42,7 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
         changed |= pass7.runOnModule(M);
         changed |= pass8.runOnModule(M);
         changed |= pass9.runOnModule(M);
+        changed |= pass10.runOnModule(M);
     } while (changed);
 }
 
@@ -59,7 +62,8 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
         DeadCodeElimination         pass6;
         JumpThreading               pass7;
         BasicBlockMerging           pass8;
-        UnreachableBlockElimination pass9;
+        TailDuplication             pass9(8);
+        UnreachableBlockElimination pass10;
 
         changed |= pass1.runOnModule(M);
         changed |= pass2.runOnModule(M);
@@ -70,5 +74,6 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
         changed |= pass7.runOnModule(M);
         changed |= pass8.runOnModule(M);
         changed |= pass9.runOnModule(M);
+        changed |= pass10.runOnModule(M);
     } while (changed);
 }
