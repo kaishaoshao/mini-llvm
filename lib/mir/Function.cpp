@@ -28,6 +28,9 @@ std::string Function::format() const {
     if (linkage() == Linkage::kInternal) {
         formattedHeader.add("internal");
     }
+    if (linkage() == Linkage::kPrivate) {
+        formattedHeader.add("private");
+    }
     formattedHeader.addFormat("{:o}:", *this);
     StringJoiner formattedBody("\n\n");
     for (const BasicBlock &B : *this) {

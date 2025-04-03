@@ -1,4 +1,4 @@
-@__format = internal global [4 x i8] c"%d\0A\00"
+@format = private global [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
@@ -9,7 +9,7 @@ define i32 @source(i32 %0) noinline {
 
 define void @sink(i32 %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @__format, i32 %0)
+  %2 = call i32 @printf(ptr @format, i32 %0)
   ret void
 }
 

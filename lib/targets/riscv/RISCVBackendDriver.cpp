@@ -5,7 +5,6 @@
 #include <initializer_list>
 #include <iterator>
 #include <memory>
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -253,13 +252,6 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
     }
 
     passManager.runAfterRegisterAllocation(MM);
-
-    int count = 0;
-    for (mir::Function &F : MM.functions) {
-        for (mir::BasicBlock &B : F) {
-            B.setName(".L" + std::to_string(count++));
-        }
-    }
 
     mc::Program program;
     RISCVMCGen(&MM, &program).emit();

@@ -1,4 +1,4 @@
-@__format = internal global [10 x i8] c"%d %c %c\0A\00"
+@format = private global [10 x i8] c"%d %c %c\0A\00"
 
 declare i32 @printf(ptr, ...)
 
@@ -15,7 +15,7 @@ define void @move(i32 %0, i8 %1, i8 %2) {
   %9 = sext i8 %8 to i32
   %10 = load i8, ptr %6
   %11 = sext i8 %10 to i32
-  %12 = call i32 @printf(ptr @__format, i32 %7, i32 %9, i32 %11)
+  %12 = call i32 @printf(ptr @format, i32 %7, i32 %9, i32 %11)
   ret void
 }
 

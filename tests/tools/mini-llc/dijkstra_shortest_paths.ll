@@ -8,7 +8,7 @@
 @heap_size = global i32 0
 @heap_idx = global ptr null
 @dist = global ptr null
-@__format = internal global [16 x i8] c"%d %d %d %d %d\0A\00"
+@format = private global [16 x i8] c"%d %d %d %d %d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)
@@ -532,7 +532,7 @@ define i32 @main() {
   %17 = load i32, ptr %16
   %18 = getelementptr i32, ptr %8, i64 4
   %19 = load i32, ptr %18
-  %20 = call i32 @printf(ptr @__format, i32 %11, i32 %13, i32 %15, i32 %17, i32 %19)
+  %20 = call i32 @printf(ptr @format, i32 %11, i32 %13, i32 %15, i32 %17, i32 %19)
   call void @free(ptr %8)
   call void @free(ptr %7)
   call void @free(ptr %6)

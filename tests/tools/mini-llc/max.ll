@@ -1,4 +1,4 @@
-@__format = internal global [4 x i8] c"%d\0A\00"
+@format = private global [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
@@ -29,8 +29,8 @@ define i32 @max(i32 %0, i32 %1) {
 define i32 @main() {
 0:
   %1 = call i32 @max(i32 42, i32 43)
-  %2 = call i32 @printf(ptr @__format, i32 %1)
+  %2 = call i32 @printf(ptr @format, i32 %1)
   %3 = call i32 @max(i32 -42, i32 -43)
-  %4 = call i32 @printf(ptr @__format, i32 %3)
+  %4 = call i32 @printf(ptr @format, i32 %3)
   ret i32 0
 }

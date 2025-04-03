@@ -4,7 +4,7 @@
 @target = global ptr null
 @next = global ptr null
 @visited = global ptr null
-@__format = internal global [4 x i8] c"%d\0A\00"
+@format = private global [4 x i8] c"%d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)
@@ -49,7 +49,7 @@ define void @visit(i32 %0) {
   %2 = alloca i32
   store i32 %0, ptr %2
   %3 = load i32, ptr %2
-  %4 = call i32 @printf(ptr @__format, i32 %3)
+  %4 = call i32 @printf(ptr @format, i32 %3)
   ret void
 }
 

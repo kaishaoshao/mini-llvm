@@ -1,4 +1,4 @@
-@__A = internal global [12 x double] [
+@A = private global [12 x double] [
   double 0x4000000000000000,
   double 0x3ff0000000000000,
   double 0xbff0000000000000,
@@ -12,7 +12,7 @@
   double 0x4000000000000000,
   double 0xc008000000000000
 ]
-@__format = internal global [10 x i8] c"%f %f %f\0A\00"
+@format = private global [10 x i8] c"%f %f %f\0A\00"
 
 declare double @fabs(double)
 declare ptr @memcpy(ptr, ptr, i64)
@@ -325,7 +325,7 @@ define void @gaussian_elimination(ptr %0, i32 %1, i32 %2) {
 define i32 @main() {
 0:
   %1 = alloca [12 x double]
-  %2 = call ptr @memcpy(ptr %1, ptr @__A, i64 96)
+  %2 = call ptr @memcpy(ptr %1, ptr @A, i64 96)
   call void @gaussian_elimination(ptr %1, i32 3, i32 4)
   %3 = getelementptr [12 x double], ptr %1, i64 0, i64 3
   %4 = load double, ptr %3
@@ -333,6 +333,6 @@ define i32 @main() {
   %6 = load double, ptr %5
   %7 = getelementptr [12 x double], ptr %1, i64 0, i64 11
   %8 = load double, ptr %7
-  %9 = call i32 @printf(ptr @__format, double %4, double %6, double %8)
+  %9 = call i32 @printf(ptr @format, double %4, double %6, double %8)
   ret i32 0
 }

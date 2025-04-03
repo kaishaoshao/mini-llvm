@@ -1,4 +1,4 @@
-@__format = internal global [4 x i8] c"%d\0A\00"
+@format = private global [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
@@ -149,13 +149,13 @@ define i32 @srem_m2147483648(i32 %0) noinline {
 define i32 @main() {
 0:
   %1 = call i32 @urem_1(i32 12345)
-  %2 = call i32 @printf(ptr @__format, i32 %1)
+  %2 = call i32 @printf(ptr @format, i32 %1)
   %3 = call i32 @urem_2(i32 12345)
-  %4 = call i32 @printf(ptr @__format, i32 %3)
+  %4 = call i32 @printf(ptr @format, i32 %3)
   %5 = call i32 @urem_3(i32 12345)
-  %6 = call i32 @printf(ptr @__format, i32 %5)
+  %6 = call i32 @printf(ptr @format, i32 %5)
   %7 = call i32 @urem_4(i32 12345)
-  %8 = call i32 @printf(ptr @__format, i32 %7)
+  %8 = call i32 @printf(ptr @format, i32 %7)
   %9 = call i32 @urem_100(i32 12345)
   %10 = call i32 @printf(ptr @format, i32 %9)
   %11 = call i32 @urem_255(i32 12345)

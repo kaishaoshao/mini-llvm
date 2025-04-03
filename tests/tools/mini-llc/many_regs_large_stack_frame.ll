@@ -1,5 +1,5 @@
-@__format1 = internal global [6 x i8] c"%lld\0A\00"
-@__format2 = internal global [4 x i8] c"%d\0A\00"
+@format1 = private global [6 x i8] c"%lld\0A\00"
+@format2 = private global [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
@@ -13,13 +13,13 @@ define void @sink1(ptr %0, ptr %1) noinline {
   %3 = ptrtoint ptr %0 to i64
   %4 = ptrtoint ptr %1 to i64
   %5 = sub i64 %3, %4
-  %6 = call i32 @printf(ptr @__format1, i64 %5)
+  %6 = call i32 @printf(ptr @format1, i64 %5)
   ret void
 }
 
 define void @sink2(i32 %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @__format2, i32 %0)
+  %2 = call i32 @printf(ptr @format2, i32 %0)
   ret void
 }
 

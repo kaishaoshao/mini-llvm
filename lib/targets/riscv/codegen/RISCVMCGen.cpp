@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "mini-llvm/common/ExtensionMode.h"
+#include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/common/ops/SExt.h"
 #include "mini-llvm/common/Precision.h"
 #include "mini-llvm/mc/Fragment.h"
@@ -111,6 +112,26 @@ using namespace mini_llvm::mc;
 
 namespace {
 
+std::string emitName(const mir::GlobalVar &G) {
+    if (G.linkage() == Linkage::kPrivate) {
+        return ".L" + G.name();
+    } else {
+        return G.name();
+    }
+}
+
+std::string emitName(const mir::Function &F) {
+    if (F.linkage() == Linkage::kPrivate) {
+        return ".L" + F.name();
+    } else {
+        return F.name();
+    }
+}
+
+std::string emitName(const mir::BasicBlock &B) {
+    return ".L" + B.name() + "_" + toString(reinterpret_cast<uintptr_t>(&B), 62);
+}
+
 class ConstantVisitorImpl final : public mir::ConstantVisitor {
 public:
     FragmentBuilder &builder() {
@@ -158,7 +179,7 @@ public:
     }
 
     void visitPtrConstant(const mir::PtrConstant &C) override {
-        builder_.add(std::make_unique<RISCVLabelDirective>(C.ptr()->name()));
+        builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*C.ptr())));
     }
 
 private:
@@ -758,15 +779,15 @@ private:
     }
 
     static std::unique_ptr<LabelOperand> makeOperand(const mir::BasicBlockOperand &op) {
-        return std::make_unique<LabelOperand>(op->name());
+        return std::make_unique<LabelOperand>(emitName(*op));
     }
 
     static std::unique_ptr<LabelOperand> makeOperand(const mir::GlobalVarOperand &op) {
-        return std::make_unique<LabelOperand>(op->name());
+        return std::make_unique<LabelOperand>(emitName(*op));
     }
 
     static std::unique_ptr<LabelOperand> makeOperand(const mir::FunctionOperand &op) {
-        return std::make_unique<LabelOperand>(op->name());
+        return std::make_unique<LabelOperand>(emitName(*op));
     }
 
     static std::unique_ptr<ImmediateOperand> makeOperand(const mir::ImmediateOperand &op) {
@@ -796,7 +817,7 @@ void RISCVMCGen::emit() {
             }
 
             bool isGlobal = (G.linkage() == Linkage::kExternal);
-            std::string name = G.name();
+            std::string name = emitName(G);
 
             Fragment fragment(section, isGlobal, std::move(name));
             emitGlobalVar(G, fragment);
@@ -809,7 +830,7 @@ void RISCVMCGen::emit() {
         if (!F.empty()) {
             Section section = Section::kText;
             bool isGlobal = (F.linkage() == Linkage::kExternal);
-            std::string name = F.name();
+            std::string name = emitName(F);
 
             Fragment fragment(section, isGlobal, std::move(name));
             emitFunction(F, fragment);
@@ -838,7 +859,7 @@ void RISCVMCGen::emitFunction(const mir::Function &F, Fragment &fragment) {
     }
 #endif
     for (const mir::BasicBlock &B : F) {
-        fragment.append(std::make_unique<Label>(B.name()));
+        fragment.append(std::make_unique<Label>(emitName(B)));
         for (const mir::Instruction &I : B) {
             I.accept(visitor);
         }

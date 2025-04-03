@@ -3,6 +3,7 @@ X(EOF)
 X(Define)
 X(Declare)
 X(Global)
+X(Private)
 X(Internal)
 X(External)
 

@@ -1,8 +1,8 @@
-@__str1 = internal global [7 x i8] c"kitten\00"
-@__str2 = internal global [8 x i8] c"sitting\00"
-@__str3 = internal global [10 x i8] c"intention\00"
-@__str4 = internal global [10 x i8] c"execution\00"
-@__format = internal global [4 x i8] c"%d\0A\00"
+@str1 = private global [7 x i8] c"kitten\00"
+@str2 = private global [8 x i8] c"sitting\00"
+@str3 = private global [10 x i8] c"intention\00"
+@str4 = private global [10 x i8] c"execution\00"
+@format = private global [4 x i8] c"%d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)
@@ -263,9 +263,9 @@ define i32 @edit_distance(ptr %0, ptr %1, i32 %2, i32 %3) {
 
 define i32 @main() {
 0:
-  %1 = call i32 @edit_distance(ptr @__str1, ptr @__str2, i32 6, i32 7)
-  %2 = call i32 @printf(ptr @__format, i32 %1)
-  %3 = call i32 @edit_distance(ptr @__str3, ptr @__str4, i32 9, i32 9)
-  %4 = call i32 @printf(ptr @__format, i32 %3)
+  %1 = call i32 @edit_distance(ptr @str1, ptr @str2, i32 6, i32 7)
+  %2 = call i32 @printf(ptr @format, i32 %1)
+  %3 = call i32 @edit_distance(ptr @str3, ptr @str4, i32 9, i32 9)
+  %4 = call i32 @printf(ptr @format, i32 %3)
   ret i32 0
 }

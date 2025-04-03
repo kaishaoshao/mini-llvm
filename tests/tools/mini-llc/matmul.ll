@@ -1,6 +1,6 @@
-@__A = internal global [6 x i32] [i32 3, i32 8, i32 2, i32 0, i32 4, i32 7]
-@__B = internal global [12 x i32] [i32 6, i32 5, i32 2, i32 3, i32 1, i32 1, i32 7, i32 0, i32 7, i32 0, i32 8, i32 3]
-@__format = internal global [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
+@A = private global [6 x i32] [i32 3, i32 8, i32 2, i32 0, i32 4, i32 7]
+@B = private global [12 x i32] [i32 6, i32 5, i32 2, i32 3, i32 1, i32 1, i32 7, i32 0, i32 7, i32 0, i32 8, i32 3]
+@format = private global [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)
@@ -121,8 +121,8 @@ define i32 @main() {
   %1 = alloca [6 x i32]
   %2 = alloca [12 x i32]
   %3 = alloca [8 x i32]
-  %4 = call ptr @memcpy(ptr %1, ptr @__A, i64 24)
-  %5 = call ptr @memcpy(ptr %2, ptr @__B, i64 48)
+  %4 = call ptr @memcpy(ptr %1, ptr @A, i64 24)
+  %5 = call ptr @memcpy(ptr %2, ptr @B, i64 48)
   call void @matmul(ptr %3, ptr %1, ptr %2, i32 2, i32 4, i32 3)
   %6 = getelementptr [8 x i32], ptr %3, i64 0, i64 0
   %7 = getelementptr [8 x i32], ptr %3, i64 0, i64 1
@@ -140,6 +140,6 @@ define i32 @main() {
   %19 = load i32, ptr %11
   %20 = load i32, ptr %12
   %21 = load i32, ptr %13
-  %22 = call i32 @printf(ptr @__format, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18, i32 %19, i32 %20, i32 %21)
+  %22 = call i32 @printf(ptr @format, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18, i32 %19, i32 %20, i32 %21)
   ret i32 0
 }

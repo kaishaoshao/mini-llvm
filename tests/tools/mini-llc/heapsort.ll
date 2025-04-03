@@ -1,5 +1,5 @@
-@__a = internal global [8 x i32] [i32 5, i32 4, i32 1, i32 3, i32 8, i32 7, i32 6, i32 2]
-@__format = internal global [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
+@a = private global [8 x i32] [i32 5, i32 4, i32 1, i32 3, i32 8, i32 7, i32 6, i32 2]
+@format = private global [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)
@@ -188,7 +188,7 @@ define void @heapsort(ptr %0, i32 %1) {
 define i32 @main() {
 0:
   %1 = alloca [8 x i32]
-  %2 = call ptr @memcpy(ptr %1, ptr @__a, i64 32)
+  %2 = call ptr @memcpy(ptr %1, ptr @a, i64 32)
   call void @heapsort(ptr %1, i32 8)
   %3 = getelementptr [8 x i32], ptr %1, i64 0, i64 0
   %4 = getelementptr [8 x i32], ptr %1, i64 0, i64 1
@@ -206,6 +206,6 @@ define i32 @main() {
   %16 = load i32, ptr %8
   %17 = load i32, ptr %9
   %18 = load i32, ptr %10
-  %19 = call i32 @printf(ptr @__format, i32 %11, i32 %12, i32 %13, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18)
+  %19 = call i32 @printf(ptr @format, i32 %11, i32 %12, i32 %13, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18)
   ret i32 0
 }

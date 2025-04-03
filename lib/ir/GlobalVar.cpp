@@ -40,6 +40,9 @@ std::string GlobalVar::format() const {
     if (linkage() == Linkage::kInternal) {
         formatted.add("internal");
     }
+    if (linkage() == Linkage::kPrivate) {
+        formatted.add("private");
+    }
     if (!hasInitializer()) {
         formatted.add("external");
     }

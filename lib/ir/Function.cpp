@@ -80,6 +80,9 @@ std::string Function::format() const {
     if (linkage() == Linkage::kInternal) {
         formatted.add("internal");
     }
+    if (linkage() == Linkage::kPrivate) {
+        formatted.add("private");
+    }
     StringJoiner formattedArgs(", ", "(", ")");
     for (const Argument &arg : args(*this)) {
         if (empty()) {
