@@ -7,12 +7,15 @@ namespace mini_llvm::ir {
 
 class StrengthReduction final : public FunctionTransform {
 public:
-    explicit StrengthReduction(size_t mulThreshold) : mulThreshold_(mulThreshold) {}
+    StrengthReduction(size_t mulThreshold, size_t divThreshold, size_t remThreshold)
+        : mulThreshold_(mulThreshold), divThreshold_(divThreshold), remThreshold_(remThreshold) {}
 
     bool runOnFunction(Function &F) override;
 
 private:
     size_t mulThreshold_;
+    size_t divThreshold_;
+    size_t remThreshold_;
 };
 
 } // namespace mini_llvm::ir

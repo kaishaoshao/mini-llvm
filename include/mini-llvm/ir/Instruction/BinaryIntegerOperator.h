@@ -27,7 +27,6 @@ public:
     }
 
     std::unique_ptr<Type> opType() const {
-        assert(*lhs()->type() == *rhs()->type());
         return lhs()->type();
     }
 

@@ -41,7 +41,7 @@ void PassManager::run(Module &M) const {
         ConstantFolding             pass7;
         PoisonPropagation           pass8;
         GlobalValueNumbering        pass9;
-        StrengthReduction           pass10(3);
+        StrengthReduction           pass10(3, 20, 20);
         FunctionInlining            pass11;
 
         ModuleTransform *passes[] = {

@@ -11,6 +11,9 @@ tests=(
     many_regs
     many_regs_large_stack_frame
     arithmetic
+    mul
+    div
+    rem
     relational
     casting
     select
