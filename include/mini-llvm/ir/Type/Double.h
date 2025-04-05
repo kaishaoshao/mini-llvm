@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <typeinfo>
@@ -29,6 +30,12 @@ public:
 
     std::unique_ptr<Constant> zeroValue() const override;
     std::unique_ptr<Constant> constant(int64_t value) const override;
+
+    std::unique_ptr<Type> promoted() const override {
+        abort();
+    }
+
+    std::unique_ptr<Type> demoted() const override;
 
     std::string format() const override {
         return "double";

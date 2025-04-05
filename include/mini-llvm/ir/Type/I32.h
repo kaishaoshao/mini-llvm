@@ -25,6 +25,9 @@ public:
     std::unique_ptr<Constant> zeroValue() const override;
     std::unique_ptr<Constant> constant(int64_t value) const override;
 
+    std::unique_ptr<Type> promoted() const override;
+    std::unique_ptr<Type> demoted() const override;
+
     std::string format() const override {
         return "i32";
     }

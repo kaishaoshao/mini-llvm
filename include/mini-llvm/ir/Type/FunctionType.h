@@ -116,6 +116,14 @@ public:
         abort();
     }
 
+    std::unique_ptr<Type> promoted() const override {
+        abort();
+    }
+
+    std::unique_ptr<Type> demoted() const override {
+        abort();
+    }
+
     std::string format() const override;
     std::unique_ptr<Type> clone() const override;
 
