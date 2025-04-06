@@ -3,8 +3,6 @@ add_library(mini-llvm
     codegen/register_allocator/NaiveAllocator.cpp
     ir/BasicBlock.cpp
     ir/Constant/ArrayConstant.cpp
-    ir/Constant/FloatingConstant.cpp
-    ir/Constant/IntegerConstant.cpp
     ir/Function.cpp
     ir/GlobalVar.cpp
     ir/Instruction.cpp
