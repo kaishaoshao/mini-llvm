@@ -1,4 +1,4 @@
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/opt/ir/Verify.h"
 
 #include <iterator>
 #include <memory>
@@ -28,15 +28,12 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-void VerificationAnalysis::runOnFunction(const Function &F) {
-    isValid_ = true;
-
+bool ir::verify(const Function &F) {
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
             for (const UseBase *op : I.operands()) {
                 if (op->expired()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
         }
@@ -44,17 +41,14 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
 
     for (const BasicBlock &B : F) {
         if (B.empty()) {
-            isValid_ = false;
-            return;
+            return false;
         }
         if (!dynamic_cast<const Terminator *>(&B.back())) {
-            isValid_ = false;
-            return;
+            return false;
         }
         for (auto i = B.begin(), e = std::prev(B.end()); i != e; ++i) {
             if (dynamic_cast<const Terminator *>(&*i)) {
-                isValid_ = false;
-                return;
+                return false;
             }
         }
     }
@@ -62,23 +56,20 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
     for (const BasicBlock &B : F) {
         if (auto *ret = dynamic_cast<const Ret *>(&B.back())) {
             if (*ret->value()->type() != *F.functionType()->returnType()) {
-                isValid_ = false;
-                return;
+                return false;
             }
         }
     }
 
     if (!hasNPredecessors(F.entry(), 0)) {
-        isValid_ = false;
-        return;
+        return false;
     }
 
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (incomingBlocks(*phi) != predecessors(B)) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
         }
@@ -88,82 +79,66 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (*op->opType() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *op = dynamic_cast<const BinaryFloatingOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (*op->opType() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *trunc = dynamic_cast<const Trunc *>(&I)) {
                 if (*trunc->value()->type() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (*trunc->type() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (trunc->type()->sizeInBits() >= trunc->value()->type()->sizeInBits()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *sext = dynamic_cast<const SExt *>(&I)) {
                 if (*sext->value()->type() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (*sext->type() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (sext->type()->sizeInBits() <= sext->value()->type()->sizeInBits()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *zext = dynamic_cast<const ZExt *>(&I)) {
                 if (*zext->value()->type() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (*zext->type() == Ptr()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
                 if (zext->type()->sizeInBits() <= zext->value()->type()->sizeInBits()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *fptrunc = dynamic_cast<const FPTrunc *>(&I)) {
                 if (fptrunc->type()->sizeInBits() >= fptrunc->value()->type()->sizeInBits()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *fpext = dynamic_cast<const FPExt *>(&I)) {
                 if (fpext->type()->sizeInBits() <= fpext->value()->type()->sizeInBits()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
             if (auto *select = dynamic_cast<const Select *>(&I)) {
                 if (*select->trueValue()->type() != *select->falseValue()->type()) {
-                    isValid_ = false;
-                    return;
+                    return false;
                 }
             }
         }
@@ -192,12 +167,10 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
                     if (!S.contains(II->parent())) {
-                        isValid_ = false;
-                        return;
+                        return false;
                     }
                     if (!dynamic_cast<const Phi *>(II) && !domTree.dominates(I, *II)) {
-                        isValid_ = false;
-                        return;
+                        return false;
                     }
                 }
             }
@@ -209,35 +182,24 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
             if (!dynamic_cast<const Phi *>(&I)) {
                 for (const UseBase *op : I.operands()) {
                     if (&**op == &I) {
-                        isValid_ = false;
-                        return;
+                        return false;
                     }
                 }
             }
         }
     }
+
+    return true;
 }
 
-void VerificationAnalysis::runOnModule(const Module &M) {
-    isValid_ = true;
+bool ir::verify(const Module &M) {
     for (const Function &F : M.functions) {
         if (!F.empty()) {
-            runOnFunction(F);
-            if (!isValid_) {
-                return;
+            if (!verify(F)) {
+                return false;
             }
         }
     }
-}
 
-bool ir::verifyFunction(const Function &F) {
-    VerificationAnalysis verify;
-    verify.runOnFunction(F);
-    return verify.isValid();
-}
-
-bool ir::verifyModule(const Module &M) {
-    VerificationAnalysis verify;
-    verify.runOnModule(M);
-    return verify.isValid();
+    return true;
 }

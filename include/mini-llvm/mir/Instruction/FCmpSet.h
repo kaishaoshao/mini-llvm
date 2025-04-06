@@ -8,7 +8,7 @@
 
 #include "mini-llvm/common/Precision.h"
 #include "mini-llvm/mir/Condition.h"
-#include "mini-llvm/mir/Formatting.h"
+#include "mini-llvm/mir/FormatPrecision.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"

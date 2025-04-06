@@ -1,7 +1,6 @@
 #include "mini-llvm/codegen/register_allocator/NaiveAllocator.h"
 
 #include <cassert>
-#include <functional>
 #include <iterator>
 #include <memory>
 #include <unordered_map>
@@ -40,14 +39,16 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
 
 } // namespace
 
-bool NaiveAllocator::allocate(Function &F,
-                              int regWidth,
-                              const std::unordered_set<VirtualRegister *> &virtRegs,
-                              const std::unordered_set<PhysicalRegister *> &physRegs,
-                              std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> load,
-                              std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store,
-                              const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &hints) {
-    (void)hints;
+bool NaiveAllocator::allocate(
+    Function &F,
+    int regWidth,
+    const std::unordered_set<VirtualRegister *> &virtRegs,
+    const std::unordered_set<PhysicalRegister *> &physRegs,
+    PhysicalRegisterAction load,
+    PhysicalRegisterAction store,
+    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &preferences
+) {
+    (void)preferences;
 
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {

@@ -6,53 +6,53 @@ using namespace mini_llvm::ir;
 
 TEST(IRReaderTest, test00) {
     const char *input = R"(
-define void @foo() {
+define void @test() {
 0:
     ret void
 }
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test01) {
     const char *input = R"(
-define internal void @foo() {
+define internal void @test() {
 0:
     ret void
 }
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test02) {
-    const char *input = "declare void @foo()";
+    const char *input = "declare void @test()";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test03) {
-    const char *input = "@foo = global i32 42";
+    const char *input = "@test = global i32 42";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test04) {
-    const char *input = "@foo = internal global i32 42";
+    const char *input = "@test = internal global i32 42";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test05) {
-    const char *input = "@foo = external global i32";
+    const char *input = "@test = external global i32";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test06) {
     const char *input = R"(
-@foo = global [2 x [3 x [4 x i32]]] [
+@test = global [2 x [3 x [4 x i32]]] [
     [3 x [4 x i32]] [
         [4 x i32] [i32 42, i32 43, i32 44, i32 45],
         [4 x i32] [i32 46, i32 47, i32 48, i32 49],
@@ -66,12 +66,12 @@ TEST(IRReaderTest, test06) {
 ]
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test07) {
     const char *input = R"(
-define i32 @foo() {
+define i32 @test1() {
 0:
     br label %2
 
@@ -79,20 +79,20 @@ define i32 @foo() {
     ret i32 %3
 
 2:
-    %3 = load i32, ptr @bar
+    %3 = load i32, ptr @test2
     br label %1
 }
 
-@bar = global ptr @baz
-@baz = global i32 42
+@test2 = global ptr @test3
+@test3 = global i32 42
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test08) {
     const char *input = R"(
-define void @foo() {
+define void @test() {
 0:
     br label %1
 
@@ -104,58 +104,58 @@ define void @foo() {
 }
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test09) {
     const char *input = R"(
-define ptr @foo() {
+define ptr @test1() {
 0:
-    ret ptr @bar
+    ret ptr @test2
 }
 )";
 
-    EXPECT_FALSE(parseModule(input).has_value());
+    EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, test10) {
     const char *input = R"(
-define ptr @foo() {
+define ptr @test() {
 0:
     ret ptr %1
 }
 )";
 
-    EXPECT_FALSE(parseModule(input).has_value());
+    EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, test11) {
     const char *input = R"(
-define void @foo() {
+define void @test() {
 0:
     br label %1
 }
 )";
 
-    EXPECT_FALSE(parseModule(input).has_value());
+    EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, test12) {
     const char *input = R"(
-@foo = global i32 42
+@test = global i32 42
 
-define void @foo() {
+define void @test() {
 0:
     ret void
 }
 )";
 
-    EXPECT_FALSE(parseModule(input).has_value());
+    EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, test13) {
     const char *input = R"(
-define void @foo(i32 %0) {
+define void @test(i32 %0) {
 1:
     %2 = add i32 %0, %0
     %2 = sub i32 %0, %0
@@ -163,12 +163,12 @@ define void @foo(i32 %0) {
 }
 )";
 
-    EXPECT_FALSE(parseModule(input).has_value());
+    EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, test14) {
     const char *input = R"(
-define void @foo() {
+define void @test() {
 0:
     ret void
 
@@ -180,58 +180,58 @@ define void @foo() {
 }
 )";
 
-    EXPECT_FALSE(parseModule(input).has_value());
+    EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, test15) {
     const char *input = R"(
-define void @foo() {
+define void @test1() {
 0:
-    call void @bar(i32 42, i32 43, i32 44)
+    call void @test2(i32 42, i32 43, i32 44)
     ret void
 }
 
-declare void @bar(i32, i32, i32)
+declare void @test2(i32, i32, i32)
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test16) {
     const char *input = R"(
-define void @foo() {
+define void @test1() {
 0:
-    %1 = call i32 @bar(i32 42, i32 43, i32 44)
+    %1 = call i32 @test2(i32 42, i32 43, i32 44)
     ret void
 }
 
-declare i32 @bar(i32, i32, i32)
+declare i32 @test2(i32, i32, i32)
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test17) {
     const char *input = R"(
-define void @foo() {
+define void @test1() {
 0:
-    %1 = getelementptr [2 x [3 x i32]], ptr @bar, i32 0, i32 0, i32 0
+    %1 = getelementptr [2 x [3 x i32]], ptr @test2, i32 0, i32 0, i32 0
     %2 = load i32, ptr %1
     ret void
 }
 
-@bar = global [2 x [3 x i32]] [
+@test2 = global [2 x [3 x i32]] [
     [3 x i32] [i32 42, i32 43, i32 44],
     [3 x i32] [i32 45, i32 46, i32 47]
 ]
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }
 
 TEST(IRReaderTest, test18) {
     const char *input = R"(
-define void @foo(i1 %0) {
+define void @test(i1 %0) {
 1:
     br i1 %0, label %2, label %3
 
@@ -244,5 +244,5 @@ define void @foo(i1 %0) {
 }
 )";
 
-    EXPECT_TRUE(parseModule(input).has_value());
+    EXPECT_TRUE(parseModule(input));
 }

@@ -34,10 +34,11 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-// Cliff Click. 1995. Global code motion/global value numbering. In Proceedings
-// of the ACM SIGPLAN 1995 conference on Programming language design and
-// implementation (PLDI '95). Association for Computing Machinery, New York,
-// NY, USA, 246–257. https://doi.org/10.1145/207110.207154
+// Cliff Click. 1995. Global code motion/global value numbering.
+// In Proceedings of the ACM SIGPLAN 1995 conference on
+// Programming language design and implementation (PLDI '95).
+// Association for Computing Machinery, New York, NY, USA, 246–257.
+// https://doi.org/10.1145/207110.207154
 
 namespace {
 
@@ -93,37 +94,44 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
     if (dynamic_cast<const IntegerCastingOperator *>(lhs.value)) {
         auto *lhsValue = static_cast<const IntegerCastingOperator *>(lhs.value),
              *rhsValue = static_cast<const IntegerCastingOperator *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const FloatingCastingOperator *>(lhs.value)) {
         auto *lhsValue = static_cast<const FloatingCastingOperator *>(lhs.value),
              *rhsValue = static_cast<const FloatingCastingOperator *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const IntegerToFloatingCastingOperator *>(lhs.value)) {
         auto *lhsValue = static_cast<const IntegerToFloatingCastingOperator *>(lhs.value),
              *rhsValue = static_cast<const IntegerToFloatingCastingOperator *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const FloatingToIntegerCastingOperator *>(lhs.value)) {
         auto *lhsValue = static_cast<const FloatingToIntegerCastingOperator *>(lhs.value),
              *rhsValue = static_cast<const FloatingToIntegerCastingOperator *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const PtrToInt *>(lhs.value)) {
         auto *lhsValue = static_cast<const PtrToInt *>(lhs.value),
              *rhsValue = static_cast<const PtrToInt *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const IntToPtr *>(lhs.value)) {
         auto *lhsValue = static_cast<const IntToPtr *>(lhs.value),
              *rhsValue = static_cast<const IntToPtr *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const BitCast *>(lhs.value)) {
         auto *lhsValue = static_cast<const BitCast *>(lhs.value),
              *rhsValue = static_cast<const BitCast *>(rhs.value);
-        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} &&
+               *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const Select *>(lhs.value)) {
         auto *lhsValue = static_cast<const Select *>(lhs.value),

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "mini-llvm/common/ExtensionMode.h"
-#include "mini-llvm/mir/Formatting.h"
+#include "mini-llvm/mir/FormatExtensionMode.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/MemoryOperand.h"

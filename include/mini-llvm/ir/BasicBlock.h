@@ -138,7 +138,7 @@ public:
     }
 
     Function::iterator parentIterator() const {
-        return parentIterator_.value();
+        return *parentIterator_;
     }
 
     std::unique_ptr<Type> type() const override {

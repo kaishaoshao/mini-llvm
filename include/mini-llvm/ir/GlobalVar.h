@@ -27,11 +27,11 @@ public:
     }
 
     bool hasInitializer() const {
-        return initializer_.has_value();
+        return static_cast<bool>(initializer_);
     }
 
     Constant &initializer() const {
-        return *initializer_.value();
+        return **initializer_;
     }
 
     void setInitializer(std::optional<std::shared_ptr<Constant>> initializer);

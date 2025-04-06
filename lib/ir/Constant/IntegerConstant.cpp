@@ -28,7 +28,7 @@ public:
     explicit TypeVisitorImpl(int64_t value) : value_(value) {}
 
     std::unique_ptr<IntegerConstant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitI1(const I1 &) override {

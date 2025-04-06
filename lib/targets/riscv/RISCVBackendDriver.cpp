@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstdlib>
-#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <memory>
@@ -146,39 +145,39 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                     };
 
-                    std::unordered_multimap<VirtualRegister *, PhysicalRegister *> hints;
+                    std::unordered_multimap<VirtualRegister *, PhysicalRegister *> preferences;
 
                     for (const BasicBlock &B : F) {
                         for (const Instruction &I : B) {
                             if (auto *mov = dynamic_cast<const Mov *>(&I)) {
                                 if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->dst())) {
                                     if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->src())) {
-                                        hints.emplace(virtReg, physReg);
+                                        preferences.emplace(virtReg, physReg);
                                     }
                                 }
                                 if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->dst())) {
                                     if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->src())) {
-                                        hints.emplace(virtReg, physReg);
+                                        preferences.emplace(virtReg, physReg);
                                     }
                                 }
                             }
                             if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
                                 if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*fmov->dst())) {
                                     if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*fmov->src())) {
-                                        hints.emplace(virtReg, physReg);
+                                        preferences.emplace(virtReg, physReg);
                                     }
                                 }
                                 if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*fmov->dst())) {
                                     if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*fmov->src())) {
-                                        hints.emplace(virtReg, physReg);
+                                        preferences.emplace(virtReg, physReg);
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (LinearScanAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, hints)) {
-                        if (NaiveAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, hints)) {
+                    if (LinearScanAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, preferences)) {
+                        if (NaiveAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, preferences)) {
                             assert(false);
                             abort();
                         }
@@ -227,44 +226,20 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     std::shared_ptr<Register> reg = share(*physReg);
                     switch (physReg->Class()) {
                     case RegisterClass::kGPR:
-                        prologueBlock->add(
-                            savePos,
-                            std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                        prologueBlock->add(
-                            savePos,
-                            std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                        prologueBlock->add(
-                            savePos,
-                            std::make_unique<Store>(8, MemoryOperand(share(*t6())), reg));
-                        epilogueBlock->add(
-                            restorePos,
-                            std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                        epilogueBlock->add(
-                            restorePos,
-                            std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                        epilogueBlock->add(
-                            restorePos,
-                            std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
+                        prologueBlock->add(savePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                        prologueBlock->add(savePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                        prologueBlock->add(savePos, std::make_unique<Store>(8, MemoryOperand(share(*t6())), reg));
+                        epilogueBlock->add(restorePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                        epilogueBlock->add(restorePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                        epilogueBlock->add(restorePos, std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
                         break;
                     case RegisterClass::kFPR:
-                        prologueBlock->add(
-                            savePos,
-                            std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                        prologueBlock->add(
-                            savePos,
-                            std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                        prologueBlock->add(
-                            savePos,
-                            std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6())), reg));
-                        epilogueBlock->add(
-                            restorePos,
-                            std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                        epilogueBlock->add(
-                            restorePos,
-                            std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                        epilogueBlock->add(
-                            restorePos,
-                            std::make_unique<FLoad>(Precision::kDouble, reg, MemoryOperand(share(*t6()))));
+                        prologueBlock->add(savePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                        prologueBlock->add(savePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                        prologueBlock->add(savePos, std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6())), reg));
+                        epilogueBlock->add(restorePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                        epilogueBlock->add(restorePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                        epilogueBlock->add(restorePos, std::make_unique<FLoad>(Precision::kDouble, reg, MemoryOperand(share(*t6()))));
                         break;
                     default:
                         abort();

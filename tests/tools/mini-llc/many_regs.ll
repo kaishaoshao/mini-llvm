@@ -13,7 +13,7 @@ define void @sink(i32 %0) noinline {
   ret void
 }
 
-define void @example() noinline {
+define void @test() noinline {
 1:
   %2 = call i32 @source(i32 0)
   %3 = call i32 @source(i32 1)
@@ -120,6 +120,6 @@ define void @example() noinline {
 
 define i32 @main() {
 0:
-  call void @example()
+  call void @test()
   ret i32 0
 }

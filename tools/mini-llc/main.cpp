@@ -14,8 +14,8 @@
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/mc/Program.h"
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 #include "mini-llvm/opt/ir/PassManager.h"
+#include "mini-llvm/opt/ir/Verify.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
@@ -57,60 +57,64 @@ int main(int argc, char *argv[]) {
     int opt;
     while ((opt = getopt_long(argc, argv, shortOpts, longOpts, nullptr)) != -1) {
         switch (opt) {
-        case CHAR_MAX + 1:
-            fprintf(stdout, "Usage: %s [--target=<target>] [-o <output-file>] <input-file>\n", argv[0]);
-            exit(0);
+            case CHAR_MAX + 1: {
+                fprintf(stdout, "Usage: %s [--target=<target>] [-o <output-file>] <input-file>\n", argv[0]);
+                return EXIT_SUCCESS;
+            }
 
-        case CHAR_MAX + 2: {
-            if (options.target != Target::kNone) {
-                fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
-                exit(1);
+            case CHAR_MAX + 2: {
+                if (options.target != Target::kNone) {
+                    fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
+                    return EXIT_FAILURE;
+                }
+                Target target = toTarget(optarg);
+                if (target == Target::kNone) {
+                    fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], optarg);
+                    return EXIT_FAILURE;
+                }
+                options.target = target;
+                break;
             }
-            Target target = toTarget(optarg);
-            if (target == Target::kNone) {
-                fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], optarg);
-                exit(1);
-            }
-            options.target = target;
-            break;
-        }
 
-        case 'o':
-            if (!options.outputFile.empty()) {
-                fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
-                exit(1);
+            case 'o': {
+                if (!options.outputFile.empty()) {
+                    fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
+                    return EXIT_FAILURE;
+                }
+                if (*optarg == '\0') {
+                    fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
+                    return EXIT_FAILURE;
+                }
+                options.outputFile = optarg;
+                break;
             }
-            if (*optarg == '\0') {
-                fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
-                exit(1);
-            }
-            options.outputFile = optarg;
-            break;
 
-        default:
-            exit(1);
+            default: {
+                return EXIT_FAILURE;
+            }
         }
     }
 
     for (; optind < argc; ++optind) {
         if (!options.inputFile.empty()) {
             fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
-            exit(1);
+            return EXIT_FAILURE;
         }
         if (*argv[optind] == '\0') {
             fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
-            exit(1);
+            return EXIT_FAILURE;
         }
         options.inputFile = argv[optind];
     }
 
     if (options.inputFile.empty()) {
         fprintf(stderr, "%s: error: no input file\n", argv[0]);
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     if (options.outputFile.empty()) {
-        options.outputFile = std::filesystem::path(options.inputFile).replace_extension(".s");
+        options.outputFile = options.inputFile;
+        options.outputFile.replace_extension(".s");
     }
 
     if (options.target == Target::kNone) {
@@ -137,7 +141,7 @@ int main(int argc, char *argv[]) {
         Target target = toTarget(targetName);
         if (target == Target::kNone) {
             fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], targetName);
-            exit(1);
+            return EXIT_FAILURE;
         }
         options.target = target;
     }
@@ -145,42 +149,42 @@ int main(int argc, char *argv[]) {
     Expected<std::string, int> input = readAll(options.inputFile);
     if (!input) {
         fprintf(stderr, "%s: error: %s\n", argv[0], strerror(input.error()));
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     std::vector<Diagnostic> diags;
     std::optional<ir::Module> M = ir::parseModule(input.value().c_str(), diags);
-    if (!M.has_value()) {
+    if (!M) {
         for (Diagnostic &diag : diags) {
             diag.file = options.inputFile;
         }
         for (const Diagnostic &diag : diags) {
             fprintf(stderr, "%s\n", diag.format().c_str());
         }
-        exit(1);
+        return EXIT_FAILURE;
     }
 
-    if (!ir::verifyModule(M.value())) {
+    if (!ir::verify(*M)) {
         fprintf(stderr, "%s: error: invalid module\n", argv[0]);
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     ir::PassManager passManager;
-    passManager.run(M.value());
+    passManager.run(*M);
 
     mc::Program program;
 
     if (options.target == Target::kRISCV64) {
         RISCVBackendDriver backendDriver;
-        program = backendDriver.run(M.value());
+        program = backendDriver.run(*M);
     }
 
     std::string output = program.format() + '\n';
 
     if (int error = writeAll(options.outputFile, output)) {
         fprintf(stderr, "%s: error: %s\n", argv[0], strerror(error));
-        exit(1);
+        return EXIT_FAILURE;
     }
 
-    exit(0);
+    return EXIT_SUCCESS;
 }

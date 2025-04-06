@@ -5,7 +5,7 @@
 
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/opt/ir/Verify.h"
 #include "TestUtils.h"
 
 using ::testing::AllOf;
@@ -16,7 +16,7 @@ using namespace mini_llvm::ir;
 
 TEST(JumpThreadingTest, test0) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define void @foo() {
+define void @test() {
 0:
     ret void
 }
@@ -27,7 +27,7 @@ define void @foo() {
 
 TEST(JumpThreadingTest, test1) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define void @foo() {
+define void @test() {
 0:
     br label %1
 
@@ -40,13 +40,13 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), Not(HasSubstr("br label %1")));
 }
 
 TEST(JumpThreadingTest, test2) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define void @foo(i1 %0) {
+define void @test(i1 %0) {
 1:
     br i1 %0, label %2, label %4
 
@@ -65,13 +65,13 @@ define void @foo(i1 %0) {
 )");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), Not(HasSubstr("br i1 %0, label %2, label %4")));
 }
 
 TEST(JumpThreadingTest, test3) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define i32 @foo() {
+define i32 @test() {
 0:
     br label %1
 
@@ -88,7 +88,7 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("br label %1")),
         Not(HasSubstr("br label %2")),
@@ -99,7 +99,7 @@ define i32 @foo() {
 
 TEST(JumpThreadingTest, test4) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define i32 @foo(i1 %0) {
+define i32 @test(i1 %0) {
 1:
     br i1 %0, label %2, label %3
 

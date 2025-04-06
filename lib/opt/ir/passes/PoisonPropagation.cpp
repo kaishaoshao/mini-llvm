@@ -29,18 +29,18 @@ using namespace mini_llvm::ir;
 namespace {
 
 bool isPoison(const Instruction &I) {
-    if (dynamic_cast<const BinaryIntegerOperator *>(&I) ||
-            dynamic_cast<const BinaryFloatingOperator *>(&I) ||
-            dynamic_cast<const UnaryFloatingOperator *>(&I) ||
-            dynamic_cast<const IntegerCastingOperator *>(&I) ||
-            dynamic_cast<const FloatingCastingOperator *>(&I) ||
-            dynamic_cast<const IntegerToFloatingCastingOperator *>(&I) ||
-            dynamic_cast<const FloatingToIntegerCastingOperator *>(&I) ||
-            dynamic_cast<const PtrToInt *>(&I) ||
-            dynamic_cast<const IntToPtr *>(&I) ||
-            dynamic_cast<const BitCast *>(&I) ||
-            dynamic_cast<const GetElementPtr *>(&I) ||
-            dynamic_cast<const Load *>(&I)) {
+    if (dynamic_cast<const BinaryIntegerOperator *>(&I)
+            || dynamic_cast<const BinaryFloatingOperator *>(&I)
+            || dynamic_cast<const UnaryFloatingOperator *>(&I)
+            || dynamic_cast<const IntegerCastingOperator *>(&I)
+            || dynamic_cast<const FloatingCastingOperator *>(&I)
+            || dynamic_cast<const IntegerToFloatingCastingOperator *>(&I)
+            || dynamic_cast<const FloatingToIntegerCastingOperator *>(&I)
+            || dynamic_cast<const PtrToInt *>(&I)
+            || dynamic_cast<const IntToPtr *>(&I)
+            || dynamic_cast<const BitCast *>(&I)
+            || dynamic_cast<const GetElementPtr *>(&I)
+            || dynamic_cast<const Load *>(&I)) {
         return std::ranges::any_of(I.operands(), [](const UseBase *op) {
             return dynamic_cast<const PoisonValue *>(&**op);
         });

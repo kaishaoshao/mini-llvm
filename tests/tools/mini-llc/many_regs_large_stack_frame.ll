@@ -23,7 +23,7 @@ define void @sink2(i32 %0) noinline {
   ret void
 }
 
-define void @example() noinline {
+define void @test() noinline {
 1:
   %2 = alloca [2048 x i8]
   call void @sink1(ptr %2, ptr %2)
@@ -132,6 +132,6 @@ define void @example() noinline {
 
 define i32 @main() {
 0:
-  call void @example()
+  call void @test()
   ret i32 0
 }

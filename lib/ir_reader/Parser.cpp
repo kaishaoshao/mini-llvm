@@ -1248,8 +1248,8 @@ Symbol Parser::parseSymbol(std::optional<Symbol::Scope> scope) {
         throw ParseException("expected identifier name", cursor_);
     }
 
-    if (scope.has_value() && symbol.scope != scope.value()) {
-        switch (scope.value()) {
+    if (scope && symbol.scope != *scope) {
+        switch (*scope) {
             case Symbol::Scope::kGlobal: throw ParseException("expected global identifier", cursor_);
             case Symbol::Scope::kLocal: throw ParseException("expected local identifier", cursor_);
         }

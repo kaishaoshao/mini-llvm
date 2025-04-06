@@ -64,7 +64,7 @@ public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
 
     std::unique_ptr<Constant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitI1Constant(const I1Constant &rhs) override {
@@ -95,8 +95,8 @@ private:
     void visit(const Const &rhs) {
         auto opResult = Op()(static_cast<const Const &>(lhs_).value(), rhs.value());
         if constexpr (is_optional_v<decltype(opResult)>) {
-            if (opResult.has_value()) {
-                result_.emplace(std::make_unique<Const>(opResult.value()));
+            if (opResult) {
+                result_.emplace(std::make_unique<Const>(*opResult));
             } else {
                 result_.emplace(std::make_unique<PoisonValue>(std::make_unique<Ty>()));
             }

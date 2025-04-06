@@ -35,70 +35,50 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-bool isIdentity(const BinaryIntegerArithmeticOperator &op) {
+bool isUnchanged(const BinaryIntegerArithmeticOperator &op) {
     int64_t rhs = static_cast<const IntegerConstant *>(&*op.rhs())->signExtendedValue();
 
-    if (rhs == 0) {
-        return dynamic_cast<const Add *>(&op)
-            || dynamic_cast<const Sub *>(&op)
-            || dynamic_cast<const Or *>(&op)
-            || dynamic_cast<const Xor *>(&op)
-            || dynamic_cast<const SHL *>(&op)
-            || dynamic_cast<const LSHR *>(&op)
-            || dynamic_cast<const ASHR *>(&op);
-    }
-
-    if (rhs == 1) {
-        return dynamic_cast<const Mul *>(&op)
-            || dynamic_cast<const SDiv *>(&op)
-            || dynamic_cast<const UDiv *>(&op);
-    }
-
-    if (rhs == -1) {
-        return dynamic_cast<const And *>(&op);
-    }
-
-    return false;
+    return (dynamic_cast<const Add *>(&op) && rhs == 0)
+        || (dynamic_cast<const Sub *>(&op) && rhs == 0)
+        || (dynamic_cast<const Or *>(&op) && rhs == 0)
+        || (dynamic_cast<const Xor *>(&op) && rhs == 0)
+        || (dynamic_cast<const SHL *>(&op) && rhs == 0)
+        || (dynamic_cast<const LSHR *>(&op) && rhs == 0)
+        || (dynamic_cast<const ASHR *>(&op) && rhs == 0)
+        || (dynamic_cast<const Mul *>(&op) && rhs == 1)
+        || (dynamic_cast<const SDiv *>(&op) && rhs == 1)
+        || (dynamic_cast<const UDiv *>(&op) && rhs == 1)
+        || (dynamic_cast<const And *>(&op) && rhs == -1);
 }
 
 bool isZero(const BinaryIntegerArithmeticOperator &op) {
     int64_t rhs = static_cast<const IntegerConstant *>(&*op.rhs())->signExtendedValue();
 
-    if (rhs == 0) {
-        return dynamic_cast<const Mul *>(&op) || dynamic_cast<const And *>(&op);
-    }
-
-    if (rhs == 1) {
-        return dynamic_cast<const SRem *>(&op) || dynamic_cast<const URem *>(&op);
-    }
-
-    return false;
+    return (dynamic_cast<const Mul *>(&op) && rhs == 0)
+        || (dynamic_cast<const And *>(&op) && rhs == 0)
+        || (dynamic_cast<const SRem *>(&op) && rhs == 1)
+        || (dynamic_cast<const URem *>(&op) && rhs == 1);
 }
 
 bool isPoison(const BinaryIntegerArithmeticOperator &op) {
     int64_t rhs = static_cast<const IntegerConstant *>(&*op.rhs())->signExtendedValue();
 
-    if (rhs == 0) {
-        return dynamic_cast<const SDiv *>(&op)
-            || dynamic_cast<const UDiv *>(&op)
-            || dynamic_cast<const SRem *>(&op)
-            || dynamic_cast<const URem *>(&op);
-    }
-
-    return false;
+    return (dynamic_cast<const SDiv *>(&op) && rhs == 0)
+        || (dynamic_cast<const UDiv *>(&op) && rhs == 0)
+        || (dynamic_cast<const SRem *>(&op) && rhs == 0)
+        || (dynamic_cast<const URem *>(&op) && rhs == 0);
 }
 
 void dfs(const DominatorTreeNode *node, bool &changed) {
     std::vector<const Instruction *> remove;
 
     for (const Instruction &I : *node->block) {
-
         if (auto *op = dynamic_cast<const BinaryIntegerArithmeticOperator *>(&I)) {
             const Value *lhs = &*op->lhs(),
                         *rhs = &*op->rhs();
 
             if (!dynamic_cast<const IntegerConstant *>(lhs) && dynamic_cast<const IntegerConstant *>(rhs)) {
-                if (isIdentity(*op)) {
+                if (isUnchanged(*op)) {
                     changed |= replaceAllUsesWith(*op, share(*const_cast<Value *>(lhs)));
                     remove.push_back(op);
                     continue;
@@ -199,7 +179,8 @@ bool AlgebraicSimplification::runOnFunction(Function &F) {
         for (Instruction &I : B) {
             if (auto *op = dynamic_cast<BinaryIntegerArithmeticOperator *>(&I)) {
                 if (op->isCommutative()
-                        && dynamic_cast<const IntegerConstant *>(&*op->lhs()) && !dynamic_cast<const IntegerConstant *>(&*op->rhs())) {
+                        && dynamic_cast<const IntegerConstant *>(&*op->lhs())
+                        && !dynamic_cast<const IntegerConstant *>(&*op->rhs())) {
                     std::shared_ptr<Value> lhs = share(*op->lhs()),
                                            rhs = share(*op->rhs());
                     op->lhs().set(std::move(rhs));

@@ -1182,11 +1182,11 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
     prologueBlock.append(std::make_unique<Sub>(8, share(*sp()), share(*sp()), share(*t6())));
 
-    prologueBlock.append(std::make_unique<Store>(8,
-        MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra())));
+    prologueBlock.append(
+        std::make_unique<Store>(8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra())));
 
-    prologueBlock.append(std::make_unique<Store>(8,
-        MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())));
+    prologueBlock.append(
+        std::make_unique<Store>(8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())));
 
     prologueBlock.append(std::make_unique<Marker>(kSave));
 
@@ -1195,11 +1195,11 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
 
     prologueBlock.append(std::make_unique<Br>(blockMap[&IF.entry()]));
 
-    epilogueBlock.append(std::make_unique<Load>(8,
-        share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))));
+    epilogueBlock.append(
+        std::make_unique<Load>(8, share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))));
 
-    epilogueBlock.append(std::make_unique<Load>(8,
-        share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))));
+    epilogueBlock.append(
+        std::make_unique<Load>(8, share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))));
 
     epilogueBlock.append(std::make_unique<Marker>(kRestore));
 

@@ -9,7 +9,7 @@
 namespace mini_llvm::ir {
 
 inline std::shared_ptr<Function> parseFunction(const char *source) {
-    return share(parseModule(source).value().functions.front());
+    return share(parseModule(source)->functions.front());
 }
 
 } // namespace mini_llvm::ir

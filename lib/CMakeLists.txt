@@ -69,8 +69,8 @@ add_library(mini-llvm
     opt/ir/passes/PoisonPropagation.cpp
     opt/ir/passes/StrengthReduction.cpp
     opt/ir/passes/UnreachableBlockElimination.cpp
-    opt/ir/passes/VerificationAnalysis.cpp
     opt/ir/PassManager.cpp
+    opt/ir/Verify.cpp
     opt/mc/FragmentTransform.cpp
     opt/mc/passes/RedundantLabelElimination.cpp
     opt/mir/BasicBlockTransform.cpp

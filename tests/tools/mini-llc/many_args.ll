@@ -3,7 +3,7 @@
 
 declare i32 @printf(ptr, ...)
 
-define void @example(
+define void @test(
   i32 %0,
   double %1,
   i32 %2,
@@ -59,7 +59,7 @@ define void @example(
 
 define i32 @main() {
 0:
-  call void @example(
+  call void @test(
     i32 0,
     double 0x3fe0000000000000,
     i32 1,

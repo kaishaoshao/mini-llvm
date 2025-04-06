@@ -25,7 +25,7 @@ public:
     }
 
     BasicBlock::iterator parentIterator() const {
-        return parentIterator_.value();
+        return *parentIterator_;
     }
 
     virtual std::unordered_set<const UseBase *> operands() const = 0;

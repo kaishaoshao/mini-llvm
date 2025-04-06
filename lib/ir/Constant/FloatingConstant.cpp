@@ -21,7 +21,7 @@ public:
     explicit TypeVisitorImpl(double value) : value_(value) {}
 
     std::unique_ptr<FloatingConstant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitFloat(const Float &) override {

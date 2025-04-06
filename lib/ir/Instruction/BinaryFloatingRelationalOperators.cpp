@@ -28,7 +28,7 @@ public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
 
     std::unique_ptr<Constant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitFloatConstant(const FloatConstant &rhs) override {

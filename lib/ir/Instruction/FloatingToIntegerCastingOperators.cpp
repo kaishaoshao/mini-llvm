@@ -35,7 +35,7 @@ template <typename Op, typename ResultConst, typename ResultTy>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     std::unique_ptr<Constant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitFloatConstant(const FloatConstant &value) override {
@@ -52,8 +52,8 @@ private:
     template <typename Const>
     void visit(const Const &value) {
         auto opResult = Op()(value.value());
-        if (opResult.has_value()) {
-            result_.emplace(std::make_unique<ResultConst>(opResult.value()));
+        if (opResult) {
+            result_.emplace(std::make_unique<ResultConst>(*opResult));
         } else {
             result_.emplace(std::make_unique<PoisonValue>(std::make_unique<ResultTy>()));
         }
@@ -66,7 +66,7 @@ public:
     explicit TypeVisitorImpl(const Constant &value) : value_(value) {}
 
     std::unique_ptr<Constant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitI1(const I1 &) override {

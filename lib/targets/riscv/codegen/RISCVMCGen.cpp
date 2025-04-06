@@ -649,23 +649,23 @@ public:
 private:
     FragmentBuilder builder_;
 
-    template <int Opcode8>
+    template <int Opcode64>
     void visitUnaryBitwiseOperator(const mir::UnaryOperator &I) {
         assert(I.width() == 8);
         assert(I.extensionMode() == ExtensionMode::kNo);
-        int opcode = Opcode8;
+        int opcode = Opcode64;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
         operands.push_back(makeOperand(I.src()));
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    template <int Opcode4, int Opcode8>
+    template <int Opcode32, int Opcode64>
     void visitBinaryOperator(const mir::BinaryOperator &I) {
         int opcode;
         switch (I.width()) {
-            case 4: opcode = Opcode4; break;
-            case 8: opcode = Opcode8; break;
+            case 4: opcode = Opcode32; break;
+            case 8: opcode = Opcode64; break;
             default: abort();
         }
 #ifndef NDEBUG
@@ -682,11 +682,11 @@ private:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    template <int Opcode8>
+    template <int Opcode64>
     void visitBinaryBitwiseOperator(const mir::BinaryOperator &I) {
         assert(I.width() == 8);
         assert(I.extensionMode() == ExtensionMode::kNo);
-        int opcode = Opcode8;
+        int opcode = Opcode64;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
         operands.push_back(makeOperand(I.src1()));
@@ -694,12 +694,12 @@ private:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    template <int Opcode4, int Opcode8>
+    template <int Opcode32, int Opcode64>
     void visitBinaryOperatorI(const mir::BinaryOperatorI &I) {
         int opcode;
         switch (I.width()) {
-            case 4: opcode = Opcode4; break;
-            case 8: opcode = Opcode8; break;
+            case 4: opcode = Opcode32; break;
+            case 8: opcode = Opcode64; break;
             default: abort();
         }
 #ifndef NDEBUG
@@ -716,11 +716,11 @@ private:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    template <int Opcode8>
+    template <int Opcode64>
     void visitBinaryBitwiseOperatorI(const mir::BinaryOperatorI &I) {
         assert(I.width() == 8);
         assert(I.extensionMode() == ExtensionMode::kNo);
-        int opcode = Opcode8;
+        int opcode = Opcode64;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
         operands.push_back(makeOperand(I.src1()));
@@ -795,13 +795,7 @@ void RISCVMCGen::emit() {
                 section = Section::kData;
             }
 
-            bool isGlobal;
-            if (G.linkage() == Linkage::kExternal) {
-                isGlobal = true;
-            } else {
-                isGlobal = false;
-            }
-
+            bool isGlobal = (G.linkage() == Linkage::kExternal);
             std::string name = G.name();
 
             Fragment fragment(section, isGlobal, std::move(name));
@@ -814,14 +808,7 @@ void RISCVMCGen::emit() {
     for (const mir::Function &F : MM_->functions) {
         if (!F.empty()) {
             Section section = Section::kText;
-
-            bool isGlobal;
-            if (F.linkage() == Linkage::kExternal) {
-                isGlobal = true;
-            } else {
-                isGlobal = false;
-            }
-
+            bool isGlobal = (F.linkage() == Linkage::kExternal);
             std::string name = F.name();
 
             Fragment fragment(section, isGlobal, std::move(name));

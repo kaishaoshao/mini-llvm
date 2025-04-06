@@ -13,7 +13,7 @@ using namespace mini_llvm::ir;
 
 TEST(DominatorTreeAnalysisTest, test0) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define void @foo(i1 %0) {
+define void @test(i1 %0) {
 1:
     br i1 %0, label %2, label %5
 

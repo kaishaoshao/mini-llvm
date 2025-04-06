@@ -24,7 +24,7 @@ TEST(LexerTest, test00) {
 TEST(LexerTest, test01) {
     const char *input = R"(
 ; Comment
-@foo = ; Comment
+@test = ; Comment
 ; Comment
 ; Comment
 global i32 42 ; Comment
@@ -32,13 +32,13 @@ global i32 42 ; Comment
 )";
 
     std::vector<Token> expectedOutput{
-        {kAt,     {},    input + 11},
-        {kName,   "foo", input + 12},
-        {kEqual,  {},    input + 16},
-        {kGlobal, {},    input + 48},
-        {kI32,    {},    input + 55},
-        {kNumber, 42,    input + 59},
-        {kEOF,    {},    input + 82},
+        {kAt,     {},     input + 11},
+        {kName,   "test", input + 12},
+        {kEqual,  {},     input + 17},
+        {kGlobal, {},     input + 49},
+        {kI32,    {},     input + 56},
+        {kNumber, 42,     input + 60},
+        {kEOF,    {},     input + 83},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
@@ -111,12 +111,12 @@ TEST(LexerTest, test07) {
 }
 
 TEST(LexerTest, test08) {
-    const char *input = "_foo.42:";
+    const char *input = "_test.42:";
 
     std::vector<Token> expectedOutput{
-        {kName,  "_foo.42", input + 0},
-        {kColon, {},        input + 7},
-        {kEOF,   {},        input + 8},
+        {kName,  "_test.42", input + 0},
+        {kColon, {},         input + 8},
+        {kEOF,   {},         input + 9},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
@@ -147,12 +147,12 @@ TEST(LexerTest, test10) {
 }
 
 TEST(LexerTest, test11) {
-    const char *input = "%_foo.42";
+    const char *input = "%_test.42";
 
     std::vector<Token> expectedOutput{
-        {kPercent, {},        input + 0},
-        {kName,    "_foo.42", input + 1},
-        {kEOF,     {},        input + 8},
+        {kPercent, {},         input + 0},
+        {kName,    "_test.42", input + 1},
+        {kEOF,     {},         input + 9},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
@@ -183,11 +183,11 @@ TEST(LexerTest, test13) {
 }
 
 TEST(LexerTest, test14) {
-    const char *input = R"(c"foo\\42\0A\00")";
+    const char *input = R"(c"test\\42\0A\00")";
 
     std::vector<Token> expectedOutput{
-        {kString, std::vector<int8_t>{0x66, 0x6f, 0x6f, 0x5c, 0x34, 0x32, 0x0a, 0x00}, input + 0},
-        {kEOF, {}, input + 16},
+        {kString, std::vector<int8_t>{0x74, 0x65, 0x73, 0x74, 0x5c, 0x34, 0x32, 0x0a, 0x00}, input + 0},
+        {kEOF, {}, input + 17},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);

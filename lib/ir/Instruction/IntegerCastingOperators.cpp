@@ -35,7 +35,7 @@ template <typename Op, typename ToConst, typename ToTy>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     std::unique_ptr<Constant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitI1Constant(const I1Constant &value) override {
@@ -73,7 +73,7 @@ public:
     explicit TypeVisitorImpl(const Constant &value) : value_(value) {}
 
     std::unique_ptr<Constant> takeResult() {
-        return std::move(result_.value());
+        return std::move(*result_);
     }
 
     void visitI1(const I1 &) override {

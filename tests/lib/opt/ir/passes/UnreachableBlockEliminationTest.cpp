@@ -4,10 +4,9 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
-#include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/opt/ir/Verify.h"
+#include "TestUtils.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
@@ -17,51 +16,51 @@ using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 TEST(UnreachableBlockEliminationTest, test0) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
-define void @foo() {
+    std::shared_ptr<Function> F = parseFunction(R"(
+define void @test() {
 0:
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_FALSE(UnreachableBlockElimination().runOnFunction(*F));
 }
 
 TEST(UnreachableBlockEliminationTest, test1) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
-define void @foo() {
+    std::shared_ptr<Function> F = parseFunction(R"(
+define void @test() {
 0:
     ret void
 
 1:
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), Not(HasSubstr("1:")));
 }
 
 TEST(UnreachableBlockEliminationTest, test2) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
-define void @foo() {
+    std::shared_ptr<Function> F = parseFunction(R"(
+define void @test() {
 0:
     ret void
 
 1:
     br label %1
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), Not(HasSubstr("1:")));
 }
 
 TEST(UnreachableBlockEliminationTest, test3) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
-define void @foo() {
+    std::shared_ptr<Function> F = parseFunction(R"(
+define void @test() {
 0:
     ret void
 
@@ -71,10 +70,10 @@ define void @foo() {
 2:
     br label %1
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("1:")),
         Not(HasSubstr("2:"))

@@ -5,7 +5,7 @@
 
 namespace mini_llvm::mir {
 
-class DeadCodeElimination : public FunctionTransform {
+class DeadCodeElimination final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
 };

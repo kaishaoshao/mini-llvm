@@ -5,7 +5,7 @@
 
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/opt/ir/passes/ConstantFolding.h"
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/opt/ir/Verify.h"
 #include "TestUtils.h"
 
 using ::testing::HasSubstr;
@@ -15,7 +15,7 @@ using namespace mini_llvm::ir;
 
 TEST(ConstantFoldingTest, test0) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define void @foo() {
+define void @test() {
 0:
     ret void
 }
@@ -26,7 +26,7 @@ define void @foo() {
 
 TEST(ConstantFoldingTest, test1) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define i32 @foo() {
+define i32 @test() {
 0:
     %1 = add i32 42, 43
     ret i32 %1
@@ -34,13 +34,13 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), HasSubstr("ret i32 85"));
 }
 
 TEST(ConstantFoldingTest, test2) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define i32 @foo() {
+define i32 @test() {
 0:
     %1 = add i32 42, 43
     %2 = add i32 %1, 44
@@ -50,13 +50,13 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), HasSubstr("ret i32 174"));
 }
 
 TEST(ConstantFoldingTest, test3) {
     std::shared_ptr<Function> F = parseFunction(R"(
-define i32 @foo() {
+define i32 @test() {
 0:
     br label %5
 
@@ -74,6 +74,6 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
-    EXPECT_TRUE(verifyFunction(*F));
+    EXPECT_TRUE(verify(*F));
     EXPECT_THAT(F->format(), HasSubstr("ret i32 129"));
 }

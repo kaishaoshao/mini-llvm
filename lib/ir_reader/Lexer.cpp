@@ -45,8 +45,8 @@ Token Lexer::nextTokenImpl() {
         return {kEOF, {}, cursor_};
     }
 
-    if (lastToken().has_value()) {
-        Token::Kind kind = lastToken().value().kind;
+    if (lastToken()) {
+        Token::Kind kind = lastToken()->kind;
         if (kind == kAt || kind == kPercent) {
             if (isalpha(*cursor_) || isdigit(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
                 const char *start = cursor_;

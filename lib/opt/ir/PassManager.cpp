@@ -16,17 +16,17 @@
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 #include "mini-llvm/opt/ir/passes/StrengthReduction.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/opt/ir/Verify.h"
 
 using namespace mini_llvm::ir;
 
 void PassManager::run(Module &M) const {
-    assert(verifyModule(M));
+    assert(verify(M));
 
     Mem2Reg pass0;
 
     pass0.runOnModule(M);
-    assert(verifyModule(M));
+    assert(verify(M));
 
     bool changed;
     do {
@@ -60,7 +60,7 @@ void PassManager::run(Module &M) const {
 
         for (ModuleTransform *pass : passes) {
             changed |= pass->runOnModule(M);
-            assert(verifyModule(M));
+            assert(verify(M));
         }
     } while (changed);
 }

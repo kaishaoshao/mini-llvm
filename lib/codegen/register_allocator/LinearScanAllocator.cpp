@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
-#include <functional>
 #include <iterator>
 #include <memory>
 #include <ranges>
@@ -104,24 +103,26 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
     return false;
 }
 
-bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs, const std::unordered_set<PhysicalRegister *> &hint) {
-    bool lhsHint = hint.contains(lhs),
-         rhsHint = hint.contains(rhs);
-    if (lhsHint != rhsHint) {
-        return lhsHint;
+bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs, const std::unordered_set<PhysicalRegister *> &preferred) {
+    bool preferLHS = preferred.contains(lhs),
+         preferRHS = preferred.contains(rhs);
+    if (preferLHS != preferRHS) {
+        return preferLHS;
     }
     return isBetter(lhs, rhs);
 }
 
 } // namespace
 
-bool LinearScanAllocator::allocate(Function &F,
-                                   int regWidth,
-                                   const std::unordered_set<VirtualRegister *> &virtRegs,
-                                   const std::unordered_set<PhysicalRegister *> &physRegs,
-                                   std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> load,
-                                   std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store,
-                                   const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &hints) {
+bool LinearScanAllocator::allocate(
+    Function &F,
+    int regWidth,
+    const std::unordered_set<VirtualRegister *> &virtRegs,
+    const std::unordered_set<PhysicalRegister *> &physRegs,
+    PhysicalRegisterAction load,
+    PhysicalRegisterAction store,
+    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &preferences
+) {
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
         assert(physReg->isAllocatable());
@@ -231,12 +232,12 @@ bool LinearScanAllocator::allocate(Function &F,
         }
         PhysicalRegister *bestPhysReg = nullptr;
         for (PhysicalRegister *physReg : free) {
-            auto range = hints.equal_range(i.virtReg);
-            std::unordered_set<PhysicalRegister *> hint;
+            std::unordered_set<PhysicalRegister *> preferred;
+            auto range = preferences.equal_range(i.virtReg);
             for (auto j = range.first; j != range.second; ++j) {
-                hint.insert(j->second);
+                preferred.insert(j->second);
             }
-            if (allocatable[i.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, hint))) {
+            if (allocatable[i.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, preferred))) {
                 bestPhysReg = physReg;
             }
         }

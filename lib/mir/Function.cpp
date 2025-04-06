@@ -22,7 +22,7 @@ std::unique_ptr<BasicBlock> Function::remove(const_iterator pos) {
 
 std::string Function::format() const {
     if (empty()) {
-        return std::format("undef {}", formatAsOperand());
+        return std::format("undefined {}", formatAsOperand());
     }
     StringJoiner formattedHeader(" ");
     if (linkage() == Linkage::kInternal) {

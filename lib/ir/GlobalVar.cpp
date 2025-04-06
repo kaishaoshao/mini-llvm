@@ -8,8 +8,6 @@
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Constant.h"
-#include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::ir;
@@ -18,18 +16,18 @@ GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
                      Linkage linkage,
                      std::optional<std::shared_ptr<Constant>> initializer)
         : valueType_(std::move(valueType)), linkage_(linkage) {
-    if (initializer.has_value()) {
-        assert(*initializer_.value()->type() == *valueType_);
-        initializer_.emplace(this, std::move(initializer.value()));
+    if (initializer) {
+        assert(*(*initializer_)->type() == *valueType_);
+        initializer_.emplace(this, std::move(*initializer));
     }
 }
 
 void GlobalVar::setInitializer(std::optional<std::shared_ptr<Constant>> initializer) {
-    if (initializer.has_value()) {
-        if (initializer_.has_value()) {
-            initializer_.value().set(std::move(initializer.value()));
+    if (initializer) {
+        if (initializer_) {
+            initializer_->set(std::move(*initializer));
         } else {
-            initializer_.emplace(this, std::move(initializer.value()));
+            initializer_.emplace(this, std::move(*initializer));
         }
     } else {
         initializer_.reset();
