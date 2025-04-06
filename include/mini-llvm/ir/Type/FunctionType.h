@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <iterator>
 #include <memory>
@@ -108,6 +109,10 @@ public:
     }
 
     std::unique_ptr<Constant> zeroValue() const override {
+        abort();
+    }
+
+    std::unique_ptr<Constant> constant(int64_t) const override {
         abort();
     }
 

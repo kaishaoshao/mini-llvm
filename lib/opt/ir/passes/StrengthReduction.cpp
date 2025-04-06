@@ -41,7 +41,7 @@ std::vector<std::shared_ptr<Instruction>> replaceMul(const Mul &I) {
     }
     for (int i = 1; i < 64; ++i) {
         if ((rhs >> i) & 1) {
-            std::shared_ptr<Instruction> term = std::make_shared<SHL>(lhs, createIntegerConstant(lhs->type(), i));
+            std::shared_ptr<Instruction> term = std::make_shared<SHL>(lhs, lhs->type()->constant(i));
             replaced.push_back(term);
             terms.push_back(term);
         }

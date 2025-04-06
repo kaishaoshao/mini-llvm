@@ -85,7 +85,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                 }
 
                 if (isZero(*op)) {
-                    changed |= replaceAllUsesWith(*op, createIntegerConstant(op->type(), 0));
+                    changed |= replaceAllUsesWith(*op, op->type()->constant(0));
                     remove.push_back(op);
                     continue;
                 }
@@ -101,8 +101,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
 
             if (!dynamic_cast<const IntegerConstant *>(lhs) && lhs == rhs) {
                 if (dynamic_cast<const Add *>(op)) {
-                    Mul &mul = addToParent(*op, std::make_shared<Mul>(share(*const_cast<Value *>(lhs)),
-                                                                      createIntegerConstant(op->opType(), 2)));
+                    Mul &mul = addToParent(*op, std::make_shared<Mul>(share(*const_cast<Value *>(lhs)), op->opType()->constant(2)));
                     replaceAllUsesWith(*op, share(mul));
                     changed = true;
                     remove.push_back(op);
@@ -119,13 +118,13 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                         || dynamic_cast<const SRem *>(op)
                         || dynamic_cast<const URem *>(op)
                         || dynamic_cast<const Xor *>(op)) {
-                    changed |= replaceAllUsesWith(*op, createIntegerConstant(op->type(), 0));
+                    changed |= replaceAllUsesWith(*op, op->type()->constant(0));
                     remove.push_back(op);
                     continue;
                 }
 
                 if (dynamic_cast<const SDiv *>(op) || dynamic_cast<const UDiv *>(op)) {
-                    changed |= replaceAllUsesWith(*op, createIntegerConstant(op->type(), 1));
+                    changed |= replaceAllUsesWith(*op, op->type()->constant(1));
                     remove.push_back(op);
                     continue;
                 }

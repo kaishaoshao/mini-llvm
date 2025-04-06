@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 #include <format>
 #include <memory>
 #include <string>
@@ -41,6 +42,7 @@ public:
     }
 
     virtual std::unique_ptr<Constant> zeroValue() const = 0;
+    virtual std::unique_ptr<Constant> constant(int64_t value) const = 0;
     virtual std::string format() const = 0;
     virtual std::unique_ptr<Type> clone() const = 0;
     virtual void accept(TypeVisitor &visitor) = 0;

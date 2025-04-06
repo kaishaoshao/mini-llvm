@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <format>
 #include <memory>
 #include <string>
@@ -42,6 +44,10 @@ public:
     }
 
     std::unique_ptr<Constant> zeroValue() const override;
+
+    std::unique_ptr<Constant> constant(int64_t) const override {
+        abort();
+    }
 
     std::string format() const override {
         return std::format("[{} x {}]", numElements(), *elementType());
