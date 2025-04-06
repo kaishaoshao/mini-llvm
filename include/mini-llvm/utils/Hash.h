@@ -11,6 +11,12 @@ namespace mini_llvm {
 
 // https://www.boost.org/doc/libs/1_86_0/libs/container_hash/doc/html/hash.html
 
+// Copyright 2005-2014 Daniel James.
+// Copyright 2021, 2022 Peter Dimov.
+// Distributed under the Boost Software License, Version 1.0.
+// https://www.boost.org/LICENSE_1_0.txt
+// Modified under the MIT License.
+
 template <typename T>
 constexpr size_t hash_value(const T &) noexcept;
 
