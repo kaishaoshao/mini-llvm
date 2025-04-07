@@ -118,7 +118,9 @@
 - `StrengthReduction`
 - `UnreachableBlockElimination`
 
-### MIR (Target-Independent)
+### MIR
+
+#### Target-Independent
 
 - `BasicBlockMerging`
 - `CopyPropagation`
@@ -131,15 +133,17 @@
 - `UnreachableBlockElimination`
 - `ZeroRegisterReplacement`
 
-### MIR (Target-Dependent)
+#### Target-Dependent
 
 - `RISCVConstantPropagation` (`riscv64`)
 
-### MC (Target-Independent)
+### MC
+
+#### Target-Independent
 
 - `RedundantLabelElimination`
 
-### MC (Target-Dependent)
+#### Target-Dependent
 
 - `RISCVFallthrough` (`riscv64`)
 
