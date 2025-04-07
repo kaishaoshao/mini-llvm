@@ -143,6 +143,7 @@
 #include "mini-llvm/mir/Instruction/Marker.h"
 #include "mini-llvm/mir/Instruction/Mov.h"
 #include "mini-llvm/mir/Instruction/Mul.h"
+#include "mini-llvm/mir/Instruction/Neg.h"
 #include "mini-llvm/mir/Instruction/Or.h"
 #include "mini-llvm/mir/Instruction/SDiv.h"
 #include "mini-llvm/mir/Instruction/SExt.h"
@@ -468,8 +469,7 @@ public:
                     default: abort();
                 }
                 builder_.add(std::make_unique<CmpZSet>(8, 8, cond, dst, dst));
-                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
-                builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
+                builder_.add(std::make_unique<Neg>(8, dst, dst));
 
                 break;
             }
@@ -517,8 +517,7 @@ public:
                 }
 
                 builder_.add(std::make_unique<CmpSet>(8, 8, cond, dst, src1, src2));
-                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
-                builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
+                builder_.add(std::make_unique<Neg>(8, dst, dst));
 
                 if (negate) {
                     builder_.add(std::make_unique<XorI>(8, dst, dst, std::make_unique<IntegerImmediate>(-1)));
@@ -616,8 +615,7 @@ public:
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
         builder_.add(std::make_unique<FCmpSet>(8, precision, cond, dst, src1, src2));
-        builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
-        builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
+        builder_.add(std::make_unique<Neg>(8, dst, dst));
         if (negate) {
             builder_.add(std::make_unique<XorI>(8, dst, dst, std::make_unique<IntegerImmediate>(-1)));
         }
