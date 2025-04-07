@@ -118,7 +118,7 @@
 - `StrengthReduction`
 - `UnreachableBlockElimination`
 
-### MIR
+### MIR (Target-Independent)
 
 - `BasicBlockMerging`
 - `CopyPropagation`
@@ -130,14 +130,18 @@
 - `TailDuplication`
 - `UnreachableBlockElimination`
 - `ZeroRegisterReplacement`
-- `riscv64`
-  - `RISCVConstantPropagation`
 
-### MC
+### MIR (Target-Dependent)
+
+- `RISCVConstantPropagation` (`riscv64`)
+
+### MC (Target-Independent)
 
 - `RedundantLabelElimination`
-- `riscv64`
-  - `RISCVFallthrough`
+
+### MC (Target-Dependent)
+
+- `RISCVFallthrough` (`riscv64`)
 
 ## Supported Register Allocators (Work in Progress)
 
