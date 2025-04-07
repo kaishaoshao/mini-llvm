@@ -410,43 +410,147 @@ public:
     }
 
     void visitSExt(const ir::SExt &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
-                                  src = prepareRegister(*I.value());
-        if (*I.value()->type() == ir::I1()) {
-            builder_.add(std::make_unique<Mov>(8, dst, src));
-            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
-            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
+        if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
+            std::shared_ptr<Register> dst = valueMap_.at(&I),
+                                      src1 = prepareRegister(*icmp->lhs()),
+                                      src2 = prepareRegister(*icmp->rhs());
+            switch (icmp->cond()) {
+                case ir::ICmp::Condition::kEQ:
+                case ir::ICmp::Condition::kNE: {
+                    builder_.add(std::make_unique<Xor>(8, dst, src1, src2));
+
+                    Condition cond;
+                    switch (icmp->cond()) {
+                        case ir::ICmp::Condition::kEQ: cond = Condition::kEQZ; break;
+                        case ir::ICmp::Condition::kNE: cond = Condition::kNEZ; break;
+                        default: abort();
+                    }
+                    builder_.add(std::make_unique<CmpZSet>(8, 8, cond, dst, dst));
+                    builder_.add(std::make_unique<Neg>(8, dst, dst));
+
+                    break;
+                }
+
+                case ir::ICmp::Condition::kSLT:
+                case ir::ICmp::Condition::kSGT:
+                case ir::ICmp::Condition::kSLE:
+                case ir::ICmp::Condition::kSGE:
+                case ir::ICmp::Condition::kULT:
+                case ir::ICmp::Condition::kUGT:
+                case ir::ICmp::Condition::kULE:
+                case ir::ICmp::Condition::kUGE: {
+                    Condition cond;
+                    bool negate;
+                    switch (icmp->cond()) {
+                        case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; negate = false; break;
+                        case ir::ICmp::Condition::kSGT: cond = Condition::kSGT; negate = false; break;
+                        case ir::ICmp::Condition::kSLE: cond = Condition::kSGT; negate = true; break;
+                        case ir::ICmp::Condition::kSGE: cond = Condition::kSLT; negate = true; break;
+                        case ir::ICmp::Condition::kULT: cond = Condition::kULT; negate = false; break;
+                        case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; negate = false; break;
+                        case ir::ICmp::Condition::kULE: cond = Condition::kUGT; negate = true; break;
+                        case ir::ICmp::Condition::kUGE: cond = Condition::kULT; negate = true; break;
+                        default: abort();
+                    }
+
+                    builder_.add(std::make_unique<CmpSet>(8, 8, cond, dst, src1, src2));
+                    builder_.add(std::make_unique<Neg>(8, dst, dst));
+
+                    if (negate) {
+                        builder_.add(std::make_unique<XorI>(8, dst, dst, std::make_unique<IntegerImmediate>(-1)));
+                    }
+
+                    break;
+                }
+            }
         } else {
-            int dstWidthInBits = I.type()->sizeInBits(8),
-                srcWidthInBits = I.value()->type()->sizeInBits(8);
-            assert(dstWidthInBits > srcWidthInBits);
-            if (srcWidthInBits == 32) {
-                builder_.add(std::make_unique<SExt>(8, 4, std::move(dst), std::move(src)));
+            std::shared_ptr<Register> dst = valueMap_.at(&I),
+                                      src = prepareRegister(*I.value());
+            if (*I.value()->type() == ir::I1()) {
+                builder_.add(std::make_unique<Neg>(8, dst, src));
             } else {
-                builder_.add(std::make_unique<Mov>(8, dst, src));
-                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
-                builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                int dstWidthInBits = I.type()->sizeInBits(8),
+                    srcWidthInBits = I.value()->type()->sizeInBits(8);
+                assert(dstWidthInBits > srcWidthInBits);
+                if (srcWidthInBits == 32) {
+                    builder_.add(std::make_unique<SExt>(8, 4, std::move(dst), std::move(src)));
+                } else {
+                    builder_.add(std::make_unique<Mov>(8, dst, src));
+                    builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                    builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                }
             }
         }
     }
 
     void visitZExt(const ir::ZExt &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
-                                  src = prepareRegister(*I.value());
-        if (*I.value()->type() == ir::I1()) {
-            builder_.add(std::make_unique<Mov>(8, dst, src));
-            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
-            builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
+        if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
+            std::shared_ptr<Register> dst = valueMap_.at(&I),
+                                      src1 = prepareRegister(*icmp->lhs()),
+                                      src2 = prepareRegister(*icmp->rhs());
+            switch (icmp->cond()) {
+                case ir::ICmp::Condition::kEQ:
+                case ir::ICmp::Condition::kNE: {
+                    builder_.add(std::make_unique<Xor>(8, dst, src1, src2));
+
+                    Condition cond;
+                    switch (icmp->cond()) {
+                        case ir::ICmp::Condition::kEQ: cond = Condition::kEQZ; break;
+                        case ir::ICmp::Condition::kNE: cond = Condition::kNEZ; break;
+                        default: abort();
+                    }
+                    builder_.add(std::make_unique<CmpZSet>(8, 8, cond, dst, dst));
+
+                    break;
+                }
+
+                case ir::ICmp::Condition::kSLT:
+                case ir::ICmp::Condition::kSGT:
+                case ir::ICmp::Condition::kSLE:
+                case ir::ICmp::Condition::kSGE:
+                case ir::ICmp::Condition::kULT:
+                case ir::ICmp::Condition::kUGT:
+                case ir::ICmp::Condition::kULE:
+                case ir::ICmp::Condition::kUGE: {
+                    Condition cond;
+                    bool negate;
+                    switch (icmp->cond()) {
+                        case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; negate = false; break;
+                        case ir::ICmp::Condition::kSGT: cond = Condition::kSGT; negate = false; break;
+                        case ir::ICmp::Condition::kSLE: cond = Condition::kSGT; negate = true; break;
+                        case ir::ICmp::Condition::kSGE: cond = Condition::kSLT; negate = true; break;
+                        case ir::ICmp::Condition::kULT: cond = Condition::kULT; negate = false; break;
+                        case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; negate = false; break;
+                        case ir::ICmp::Condition::kULE: cond = Condition::kUGT; negate = true; break;
+                        case ir::ICmp::Condition::kUGE: cond = Condition::kULT; negate = true; break;
+                        default: abort();
+                    }
+
+                    builder_.add(std::make_unique<CmpSet>(8, 8, cond, dst, src1, src2));
+
+                    if (negate) {
+                        builder_.add(std::make_unique<XorI>(8, dst, dst, std::make_unique<IntegerImmediate>(1)));
+                    }
+
+                    break;
+                }
+            }
         } else {
-            int dstWidthInBits = I.type()->sizeInBits(8),
-                srcWidthInBits = I.value()->type()->sizeInBits(8);
-            assert(dstWidthInBits > srcWidthInBits);
-            if (srcWidthInBits == 8) {
-                builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(0xff)));
+            std::shared_ptr<Register> dst = valueMap_.at(&I),
+                                      src = prepareRegister(*I.value());
+            if (*I.value()->type() == ir::I1()) {
+                builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(1)));
             } else {
-                builder_.add(std::make_unique<Mov>(8, dst, src));
-                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
-                builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                int dstWidthInBits = I.type()->sizeInBits(8),
+                    srcWidthInBits = I.value()->type()->sizeInBits(8);
+                assert(dstWidthInBits > srcWidthInBits);
+                if (srcWidthInBits == 8) {
+                    builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(0xff)));
+                } else {
+                    builder_.add(std::make_unique<Mov>(8, dst, src));
+                    builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                    builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                }
             }
         }
     }
