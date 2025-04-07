@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/Function.h"
@@ -14,6 +15,7 @@
 #include "mini-llvm/ir/Instruction/And.h"
 #include "mini-llvm/ir/Instruction/ASHR.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
+#include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/ir/Instruction/LSHR.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
 #include "mini-llvm/ir/Instruction/Or.h"
@@ -132,6 +134,33 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                     continue;
                 }
 
+                continue;
+            }
+
+            continue;
+        }
+
+        if (auto *icmp = dynamic_cast<const ICmp *>(&I)) {
+            if (&*icmp->lhs() == &*icmp->rhs()) {
+                bool result;
+                switch (icmp->cond()) {
+                    case ICmp::Condition::kEQ:
+                    case ICmp::Condition::kSLE:
+                    case ICmp::Condition::kSGE:
+                    case ICmp::Condition::kULE:
+                    case ICmp::Condition::kUGE:
+                        result = true;
+                        break;
+
+                    case ICmp::Condition::kNE:
+                    case ICmp::Condition::kSLT:
+                    case ICmp::Condition::kSGT:
+                    case ICmp::Condition::kULT:
+                    case ICmp::Condition::kUGT:
+                        result = false;
+                        break;
+                }
+                changed |= replaceAllUsesWith(*icmp, std::make_shared<I1Constant>(result));
                 continue;
             }
 
