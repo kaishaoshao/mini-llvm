@@ -452,7 +452,6 @@ public:
     }
 
     void visitICmp(const ir::ICmp &I) override {
-        int widthInBits = I.opType()->sizeInBits(8);
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
@@ -483,37 +482,17 @@ public:
             case ir::ICmp::Condition::kULE:
             case ir::ICmp::Condition::kUGE: {
                 Condition cond;
-                bool zeroExtend;
                 bool negate;
                 switch (I.cond()) {
-                    case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; zeroExtend = false; negate = false; break;
-                    case ir::ICmp::Condition::kSGT: cond = Condition::kSGT; zeroExtend = false; negate = false; break;
-                    case ir::ICmp::Condition::kSLE: cond = Condition::kSGT; zeroExtend = false; negate = true; break;
-                    case ir::ICmp::Condition::kSGE: cond = Condition::kSLT; zeroExtend = false; negate = true; break;
-                    case ir::ICmp::Condition::kULT: cond = Condition::kULT; zeroExtend = true; negate = false; break;
-                    case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; zeroExtend = true; negate = false; break;
-                    case ir::ICmp::Condition::kULE: cond = Condition::kUGT; zeroExtend = true; negate = true; break;
-                    case ir::ICmp::Condition::kUGE: cond = Condition::kULT; zeroExtend = true; negate = true; break;
+                    case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; negate = false; break;
+                    case ir::ICmp::Condition::kSGT: cond = Condition::kSGT; negate = false; break;
+                    case ir::ICmp::Condition::kSLE: cond = Condition::kSGT; negate = true; break;
+                    case ir::ICmp::Condition::kSGE: cond = Condition::kSLT; negate = true; break;
+                    case ir::ICmp::Condition::kULT: cond = Condition::kULT; negate = false; break;
+                    case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; negate = false; break;
+                    case ir::ICmp::Condition::kULE: cond = Condition::kUGT; negate = true; break;
+                    case ir::ICmp::Condition::kUGE: cond = Condition::kULT; negate = true; break;
                     default: abort();
-                }
-
-                if (zeroExtend) {
-                    std::shared_ptr<Register> tmp1 = std::make_shared<VirtualRegister>(),
-                                              tmp2 = std::make_shared<VirtualRegister>();
-                    if (widthInBits == 8) {
-                        builder_.add(std::make_unique<AndI>(8, tmp1, src1, std::make_unique<IntegerImmediate>(0xff)));
-                        builder_.add(std::make_unique<AndI>(8, tmp2, src2, std::make_unique<IntegerImmediate>(0xff)));
-                    } else {
-                        builder_.add(std::make_unique<Mov>(8, tmp1, src1));
-                        builder_.add(std::make_unique<SHLI>(8, tmp1, tmp1, std::make_unique<IntegerImmediate>(64 - widthInBits)));
-                        builder_.add(std::make_unique<SHRLI>(8, tmp1, tmp1, std::make_unique<IntegerImmediate>(64 - widthInBits)));
-
-                        builder_.add(std::make_unique<Mov>(8, tmp2, src2));
-                        builder_.add(std::make_unique<SHLI>(8, tmp2, tmp2, std::make_unique<IntegerImmediate>(64 - widthInBits)));
-                        builder_.add(std::make_unique<SHRLI>(8, tmp2, tmp2, std::make_unique<IntegerImmediate>(64 - widthInBits)));
-                    }
-                    src1 = std::move(tmp1);
-                    src2 = std::move(tmp2);
                 }
 
                 builder_.add(std::make_unique<CmpSet>(8, 8, cond, dst, src1, src2));
