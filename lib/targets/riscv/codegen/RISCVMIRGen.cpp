@@ -639,7 +639,7 @@ public:
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
         int srcWidthInBits = I.value()->type()->sizeInBits(8);
-        if (srcWidthInBits < 8) {
+        if (srcWidthInBits < 64) {
             builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
             builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
         }
