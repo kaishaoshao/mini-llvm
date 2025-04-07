@@ -462,8 +462,11 @@ public:
                 builder_.add(std::make_unique<Xor>(8, dst, src1, src2));
 
                 Condition cond;
-                if (I.cond() == ir::ICmp::Condition::kEQ) cond = Condition::kEQZ;
-                if (I.cond() == ir::ICmp::Condition::kNE) cond = Condition::kNEZ;
+                switch (I.cond()) {
+                    case ir::ICmp::Condition::kEQ: cond = Condition::kEQZ; break;
+                    case ir::ICmp::Condition::kNE: cond = Condition::kNEZ; break;
+                    default: abort();
+                }
                 builder_.add(std::make_unique<CmpZSet>(8, 8, cond, dst, dst));
                 builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
                 builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
