@@ -73,6 +73,7 @@
 #include "mini-llvm/mir/Instruction/Load.h"
 #include "mini-llvm/mir/Instruction/Mov.h"
 #include "mini-llvm/mir/Instruction/Mul.h"
+#include "mini-llvm/mir/Instruction/Neg.h"
 #include "mini-llvm/mir/Instruction/Not.h"
 #include "mini-llvm/mir/Instruction/Or.h"
 #include "mini-llvm/mir/Instruction/OrI.h"
@@ -209,11 +210,15 @@ public:
     }
 
     void visitMov(const mir::Mov &I) override {
-        visitUnaryBitwiseOperator<RISCV_Mv>(I);
+        visitUnaryOperator<RISCV_Mv>(I);
+    }
+
+    void visitNeg(const mir::Neg &I) override {
+        visitUnaryOperator<RISCV_Neg>(I);
     }
 
     void visitNot(const mir::Not &I) override {
-        visitUnaryBitwiseOperator<RISCV_Not>(I);
+        visitUnaryOperator<RISCV_Not>(I);
     }
 
     void visitAdd(const mir::Add &I) override {
@@ -671,7 +676,7 @@ private:
     FragmentBuilder builder_;
 
     template <int Opcode64>
-    void visitUnaryBitwiseOperator(const mir::UnaryOperator &I) {
+    void visitUnaryOperator(const mir::UnaryOperator &I) {
         assert(I.width() == 8);
         assert(I.extensionMode() == ExtensionMode::kNo);
         int opcode = Opcode64;

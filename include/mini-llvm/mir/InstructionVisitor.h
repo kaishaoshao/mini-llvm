@@ -40,6 +40,7 @@ class Load;
 class Marker;
 class Mov;
 class Mul;
+class Neg;
 class Not;
 class Or;
 class OrI;
@@ -100,6 +101,7 @@ public:
     virtual void visitMarker(Marker &I) { visitMarker(std::as_const(I)); }
     virtual void visitMov(Mov &I) { visitMov(std::as_const(I)); }
     virtual void visitMul(Mul &I) { visitMul(std::as_const(I)); }
+    virtual void visitNeg(Neg &I) { visitNeg(std::as_const(I)); }
     virtual void visitNot(Not &I) { visitNot(std::as_const(I)); }
     virtual void visitOr(Or &I) { visitOr(std::as_const(I)); }
     virtual void visitOrI(OrI &I) { visitOrI(std::as_const(I)); }
@@ -156,6 +158,7 @@ public:
     virtual void visitMarker(const Marker &) { abort(); }
     virtual void visitMov(const Mov &) { abort(); }
     virtual void visitMul(const Mul &) { abort(); }
+    virtual void visitNeg(const Neg &) { abort(); }
     virtual void visitNot(const Not &) { abort(); }
     virtual void visitOr(const Or &) { abort(); }
     virtual void visitOrI(const OrI &) { abort(); }
