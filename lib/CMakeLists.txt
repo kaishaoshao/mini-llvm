@@ -74,6 +74,7 @@ add_library(mini-llvm
     opt/mir/BasicBlockTransform.cpp
     opt/mir/FunctionTransform.cpp
     opt/mir/passes/BasicBlockMerging.cpp
+    opt/mir/passes/BranchPredictionAnalysis.cpp
     opt/mir/passes/CopyPropagation.cpp
     opt/mir/passes/DeadCodeElimination.cpp
     opt/mir/passes/JumpThreading.cpp
