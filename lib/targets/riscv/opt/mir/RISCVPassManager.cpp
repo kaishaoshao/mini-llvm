@@ -2,6 +2,7 @@
 
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/mir/passes/BasicBlockMerging.h"
+#include "mini-llvm/opt/mir/passes/BasicBlockReordering.h"
 #include "mini-llvm/opt/mir/passes/CopyPropagation.h"
 #include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
 #include "mini-llvm/opt/mir/passes/JumpThreading.h"
@@ -76,4 +77,7 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
         changed |= pass9.runOnModule(M);
         changed |= pass10.runOnModule(M);
     } while (changed);
+
+    BasicBlockReordering pass11;
+    pass11.runOnModule(M);
 }

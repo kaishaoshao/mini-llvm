@@ -121,6 +121,7 @@
 ### MIR
 
 - `BasicBlockMerging`
+- `BasicBlockReordering`
 - `CopyPropagation`
 - `DeadCodeElimination`
 - `JumpThreading`
