@@ -50,8 +50,8 @@ std::vector<int> dp(int n, const std::vector<std::vector<double>> &D, int s) {
         }
     }
     int S = ((1 << n) - 1) & ~(1 << s) & ~(1 << t);
-    std::vector<int> path;
-    path.push_back(t);
+    std::vector<int> path(n);
+    path[0] = t;
     for (int i = 1; i < n - 1; ++i) {
         int v;
         double min = std::numeric_limits<double>::infinity();
@@ -63,9 +63,9 @@ std::vector<int> dp(int n, const std::vector<std::vector<double>> &D, int s) {
         }
         t = v;
         S &= ~(1 << v);
-        path.push_back(t);
+        path[i] = t;
     }
-    path.push_back(s);
+    path[n - 1] = s;
     std::reverse(path.begin(), path.end());
     return path;
 }
@@ -98,14 +98,14 @@ std::vector<int> aco(
             std::vector<int> path(n);
             path[0] = s;
             for (int j = 1; j < n; ++j) {
-                std::vector<double> probs(n);
+                std::vector<double> weights(n);
                 for (int k = 0; k < n; ++k) {
-                    probs[k] = pow(tau[path[j - 1]][k], alpha) * pow(1. / (D[path[j - 1]][k] + 1e-10), beta);
+                    weights[k] = pow(tau[path[j - 1]][k], alpha) * pow(1. / (D[path[j - 1]][k] + 1e-10), beta);
                 }
                 for (int k = 0; k < j; ++k) {
-                    probs[path[k]] = 0.;
+                    weights[path[k]] = 0.;
                 }
-                path[j] = std::discrete_distribution<int>(probs.begin(), probs.end())(rng);
+                path[j] = std::discrete_distribution<int>(weights.begin(), weights.end())(rng);
             }
             paths.push_back(path);
         }
@@ -153,9 +153,9 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         }
     }
 
-    std::vector<int> initialPath;
+    std::vector<int> initialPath(n);
     for (int i = 0; i < n; ++i) {
-        initialPath.push_back(i);
+        initialPath[i] = i;
     }
 
     std::vector<int> bestPath;
