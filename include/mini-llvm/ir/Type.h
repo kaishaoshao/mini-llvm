@@ -33,12 +33,12 @@ public:
         return alignment() * 8;
     }
 
-    virtual int sizeInBits(int pointerSizeAndAlignment) const {
-        return size(pointerSizeAndAlignment) * 8;
+    virtual int sizeInBits(int pointerSize) const {
+        return size(pointerSize) * 8;
     }
 
-    virtual int alignmentInBits(int pointerSizeAndAlignment) const {
-        return alignment(pointerSizeAndAlignment) * 8;
+    virtual int alignmentInBits(int pointerSize) const {
+        return alignment(pointerSize) * 8;
     }
 
     virtual std::unique_ptr<Constant> zeroValue() const = 0;

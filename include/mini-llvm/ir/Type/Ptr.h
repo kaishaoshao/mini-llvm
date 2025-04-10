@@ -24,12 +24,12 @@ public:
         abort();
     }
 
-    int size(int pointerSizeAndAlignment) const override {
-        return pointerSizeAndAlignment;
+    int size(int pointerSize) const override {
+        return pointerSize;
     }
 
-    int alignment(int pointerSizeAndAlignment) const override {
-        return pointerSizeAndAlignment;
+    int alignment(int pointerSize) const override {
+        return pointerSize;
     }
 
     std::unique_ptr<Constant> zeroValue() const override;

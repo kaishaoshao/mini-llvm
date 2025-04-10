@@ -397,15 +397,15 @@ public:
     void visitTrunc(const ir::Trunc &I) override {
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src = prepareRegister(*I.value());
-        int dstWidthInBits = I.type()->sizeInBits(8),
-            srcWidthInBits = I.value()->type()->sizeInBits(8);
-        assert(dstWidthInBits < srcWidthInBits);
-        if (dstWidthInBits == 32) {
+        int dstBitWidth = I.type()->sizeInBits(8),
+            srcBitWidth = I.value()->type()->sizeInBits(8);
+        assert(dstBitWidth < srcBitWidth);
+        if (dstBitWidth == 32) {
             builder_.add(std::make_unique<SExt>(8, 4, std::move(dst), std::move(src)));
         } else {
             builder_.add(std::make_unique<Mov>(8, dst, src));
-            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstWidthInBits)));
-            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstWidthInBits)));
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstBitWidth)));
+            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstBitWidth)));
         }
     }
 
@@ -469,15 +469,15 @@ public:
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<Neg>(8, dst, src));
             } else {
-                int dstWidthInBits = I.type()->sizeInBits(8),
-                    srcWidthInBits = I.value()->type()->sizeInBits(8);
-                assert(dstWidthInBits > srcWidthInBits);
-                if (srcWidthInBits == 32) {
+                int dstBitWidth = I.type()->sizeInBits(8),
+                    srcBitWidth = I.value()->type()->sizeInBits(8);
+                assert(dstBitWidth > srcBitWidth);
+                if (srcBitWidth == 32) {
                     builder_.add(std::make_unique<SExt>(8, 4, std::move(dst), std::move(src)));
                 } else {
                     builder_.add(std::make_unique<Mov>(8, dst, src));
-                    builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
-                    builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                    builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcBitWidth)));
+                    builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcBitWidth)));
                 }
             }
         }
@@ -541,15 +541,15 @@ public:
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(1)));
             } else {
-                int dstWidthInBits = I.type()->sizeInBits(8),
-                    srcWidthInBits = I.value()->type()->sizeInBits(8);
-                assert(dstWidthInBits > srcWidthInBits);
-                if (srcWidthInBits == 8) {
+                int dstBitWidth = I.type()->sizeInBits(8),
+                    srcBitWidth = I.value()->type()->sizeInBits(8);
+                assert(dstBitWidth > srcBitWidth);
+                if (srcBitWidth == 8) {
                     builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(0xff)));
                 } else {
                     builder_.add(std::make_unique<Mov>(8, dst, src));
-                    builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
-                    builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+                    builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcBitWidth)));
+                    builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcBitWidth)));
                 }
             }
         }
@@ -708,10 +708,10 @@ public:
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
-        int dstWidthInBits = I.type()->sizeInBits(8);
-        if (dstWidthInBits < 64) {
-            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstWidthInBits)));
-            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstWidthInBits)));
+        int dstBitWidth = I.type()->sizeInBits(8);
+        if (dstBitWidth < 64) {
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstBitWidth)));
+            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstBitWidth)));
         }
     }
 
@@ -719,10 +719,10 @@ public:
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
-        int srcWidthInBits = I.value()->type()->sizeInBits(8);
-        if (srcWidthInBits < 64) {
-            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
-            builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidthInBits)));
+        int srcBitWidth = I.value()->type()->sizeInBits(8);
+        if (srcBitWidth < 64) {
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcBitWidth)));
+            builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcBitWidth)));
         }
     }
 
@@ -1120,19 +1120,19 @@ private:
 
     template <typename IInstr, typename MInstr>
     void visitBinaryIntegerArithmeticOperator(const IInstr &I) {
-        int widthInBits = I.opType()->sizeInBits(8);
-        ExtensionMode extensionMode = widthInBits == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
+        int bitWidth = I.opType()->sizeInBits(8);
+        ExtensionMode extensionMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
 
-        if (widthInBits == 32) {
+        if (bitWidth == 32) {
             builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, extensionMode));
         } else {
             builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, extensionMode));
-            if (widthInBits < 64) {
-                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - widthInBits)));
-                builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - widthInBits)));
+            if (bitWidth < 64) {
+                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
+                builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
             }
         }
     }
