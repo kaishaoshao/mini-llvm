@@ -1,4 +1,4 @@
-#include "mini-llvm/codegen/register_allocator/NaiveAllocator.h"
+#include "mini-llvm/codegen/register_allocators/NaiveAllocator.h"
 
 #include <cassert>
 #include <iterator>

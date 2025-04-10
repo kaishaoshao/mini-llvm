@@ -1,4 +1,4 @@
-#include "mini-llvm/codegen/register_allocator/LinearScanAllocator.h"
+#include "mini-llvm/codegen/register_allocators/LinearScanAllocator.h"
 
 #include <algorithm>
 #include <cassert>

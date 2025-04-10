@@ -9,8 +9,8 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/codegen/register_allocator/LinearScanAllocator.h"
-#include "mini-llvm/codegen/register_allocator/NaiveAllocator.h"
+#include "mini-llvm/codegen/register_allocators/LinearScanAllocator.h"
+#include "mini-llvm/codegen/register_allocators/NaiveAllocator.h"
 #include "mini-llvm/common/ExtensionMode.h"
 #include "mini-llvm/common/Precision.h"
 #include "mini-llvm/ir/Module.h"

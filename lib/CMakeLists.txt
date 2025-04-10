@@ -1,6 +1,6 @@
 add_library(mini-llvm
-    codegen/register_allocator/LinearScanAllocator.cpp
-    codegen/register_allocator/NaiveAllocator.cpp
+    codegen/register_allocators/LinearScanAllocator.cpp
+    codegen/register_allocators/NaiveAllocator.cpp
     ir/BasicBlock.cpp
     ir/Constant/ArrayConstant.cpp
     ir/Function.cpp
