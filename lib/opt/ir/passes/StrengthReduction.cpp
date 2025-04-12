@@ -31,9 +31,11 @@
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/Assignment.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
+using namespace mini_llvm::assignment_ops;
 using namespace mini_llvm::ir;
 
 namespace {
@@ -57,11 +59,7 @@ std::vector<int> computeNAF(uint64_t n) {
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceMulNeg1(Value &lhs) {
-    std::vector<std::shared_ptr<Instruction>> replaced;
-
-    replaced.emplace_back(std::make_shared<Sub>(lhs.type()->constant(0), share(lhs)));
-
-    return replaced;
+    return std::vector<std::shared_ptr<Instruction>>() + std::make_shared<Sub>(lhs.type()->constant(0), share(lhs));
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceMulGeneral(Value &lhs, uint64_t rhs) {
@@ -75,7 +73,7 @@ std::vector<std::shared_ptr<Instruction>> replaceMulGeneral(Value &lhs, uint64_t
     for (size_t i = 1; i < naf.size(); ++i) {
         if (naf[i] != 0) {
             std::shared_ptr<Instruction> x = std::make_shared<SHL>(share(lhs), lhs.type()->constant(i));
-            replaced.emplace_back(x);
+            replaced += x;
             terms.emplace_back(x, naf[i]);
         }
     }
@@ -84,15 +82,15 @@ std::vector<std::shared_ptr<Instruction>> replaceMulGeneral(Value &lhs, uint64_t
     }
     if (terms.size() >= 2) {
         if (terms[1].second > 0) {
-            replaced.emplace_back(std::make_shared<Add>(terms[0].first, terms[1].first));
+            replaced += std::make_shared<Add>(terms[0].first, terms[1].first);
         } else {
-            replaced.emplace_back(std::make_shared<Sub>(terms[0].first, terms[1].first));
+            replaced += std::make_shared<Sub>(terms[0].first, terms[1].first);
         }
         for (size_t i = 2; i < terms.size(); ++i) {
             if (terms[i].second > 0) {
-                replaced.emplace_back(std::make_shared<Add>(replaced.back(), terms[i].first));
+                replaced += std::make_shared<Add>(replaced.back(), terms[i].first);
             } else {
-                replaced.emplace_back(std::make_shared<Sub>(replaced.back(), terms[i].first));
+                replaced += std::make_shared<Sub>(replaced.back(), terms[i].first);
             }
         }
     }
@@ -127,23 +125,15 @@ std::vector<std::shared_ptr<Instruction>> replaceMul(const Mul &I) {
 // Association for Computing Machinery, New York, NY, USA, 61-72. https://doi.org/10.1145/178243.178249
 
 std::vector<std::shared_ptr<Instruction>> replaceUDivLarge(Value &n, uint64_t d) {
-    std::vector<std::shared_ptr<Instruction>> replaced;
-
     std::shared_ptr<Instruction> x1 = std::make_shared<ICmp>(ICmp::Condition::kUGE, share(n), n.type()->constant(d));
     std::shared_ptr<Instruction> x2 = std::make_shared<ZExt>(x1, cast<IntegerType>(n.type()));
 
-    replaced.push_back(x1);
-    replaced.push_back(x2);
-
-    return replaced;
+    return std::vector<std::shared_ptr<Instruction>>() + x1 + x2;
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceUDivPow2(Value &n, uint64_t d) {
-    std::vector<std::shared_ptr<Instruction>> replaced;
-
-    replaced.push_back(std::make_shared<LSHR>(share(n), n.type()->constant(std::countr_zero(d))));
-
-    return replaced;
+    return std::vector<std::shared_ptr<Instruction>>() +
+           std::make_shared<LSHR>(share(n), n.type()->constant(std::countr_zero(d)));
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceUDivGeneral(Value &n, uint64_t d) {
@@ -154,14 +144,14 @@ std::vector<std::shared_ptr<Instruction>> replaceUDivGeneral(Value &n, uint64_t 
     uint32_t m = (UINT64_C(1) << (N + l)) / d - (UINT64_C(1) << N) + 1;
 
     std::shared_ptr<Instruction> x1 = std::make_shared<ZExt>(share(n), cast<IntegerType>(n.type()->promoted()));
-    replaced.push_back(x1);
+    replaced += x1;
 
     std::shared_ptr<Instruction> x2;
     if (m == 1) {
         x2 = x1;
     } else {
         x2 = std::make_shared<Mul>(x1, n.type()->promoted()->constant(m));
-        replaced.push_back(x2);
+        replaced += x2;
     }
 
     std::shared_ptr<Instruction> x3 = std::make_shared<LSHR>(x2, n.type()->promoted()->constant(N));
@@ -169,10 +159,7 @@ std::vector<std::shared_ptr<Instruction>> replaceUDivGeneral(Value &n, uint64_t 
     std::shared_ptr<Instruction> x5 = std::make_shared<LSHR>(x4, n.type()->promoted()->constant(l));
     std::shared_ptr<Instruction> x6 = std::make_shared<Trunc>(x5, cast<IntegerType>(n.type()));
 
-    replaced.push_back(x3);
-    replaced.push_back(x4);
-    replaced.push_back(x5);
-    replaced.push_back(x6);
+    replaced += x3, x4, x5, x6;
 
     return replaced;
 }
@@ -208,11 +195,7 @@ std::vector<std::shared_ptr<Instruction>> replaceUDiv(const UDiv &I) {
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceSDivNeg1(Value &n) {
-    std::vector<std::shared_ptr<Instruction>> replaced;
-
-    replaced.push_back(std::make_shared<Sub>(n.type()->constant(0), share(n)));
-
-    return replaced;
+    return std::vector<std::shared_ptr<Instruction>>() + std::make_shared<Sub>(n.type()->constant(0), share(n));
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceSDivPow2(Value &n, int64_t d) {
@@ -226,14 +209,11 @@ std::vector<std::shared_ptr<Instruction>> replaceSDivPow2(Value &n, int64_t d) {
     std::shared_ptr<Instruction> x3 = std::make_shared<Add>(share(n), x2);
     std::shared_ptr<Instruction> x4 = std::make_shared<ASHR>(x3, n.type()->constant(l));
 
-    replaced.push_back(x1);
-    replaced.push_back(x2);
-    replaced.push_back(x3);
-    replaced.push_back(x4);
+    replaced += x1, x2, x3, x4;
 
     if (d < 0) {
         std::shared_ptr<Instruction> x5 = std::make_shared<Sub>(n.type()->constant(0), x4);
-        replaced.push_back(x5);
+        replaced += x5;
     }
 
     return replaced;
@@ -247,14 +227,14 @@ std::vector<std::shared_ptr<Instruction>> replaceSDivGeneral(Value &n, int64_t d
     int32_t m = static_cast<int32_t>(1 + (UINT64_C(1) << (N + l - 1)) / std::abs(d) - (UINT64_C(1) << N));
 
     std::shared_ptr<Instruction> x1 = std::make_shared<ZExt>(share(n), cast<IntegerType>(n.type()->promoted()));
-    replaced.push_back(x1);
+    replaced += x1;
 
     std::shared_ptr<Instruction> x2;
     if (m == 1) {
         x2 = x1;
     } else {
         x2 = std::make_shared<Mul>(x1, n.type()->promoted()->constant(m));
-        replaced.push_back(x2);
+        replaced += x2;
     }
 
     std::shared_ptr<Instruction> x3 = std::make_shared<LSHR>(x2, n.type()->promoted()->constant(N));
@@ -264,16 +244,11 @@ std::vector<std::shared_ptr<Instruction>> replaceSDivGeneral(Value &n, int64_t d
     std::shared_ptr<Instruction> x7 = std::make_shared<ASHR>(share(n), n.type()->constant(N - 1));
     std::shared_ptr<Instruction> x8 = std::make_shared<Sub>(x6, x7);
 
-    replaced.push_back(x3);
-    replaced.push_back(x4);
-    replaced.push_back(x5);
-    replaced.push_back(x6);
-    replaced.push_back(x7);
-    replaced.push_back(x8);
+    replaced += x3, x4, x5, x6, x7, x8;
 
     if (d < 0) {
         std::shared_ptr<Instruction> x9 = std::make_shared<Sub>(n.type()->constant(0), x8);
-        replaced.push_back(x9);
+        replaced += x9;
     }
 
     return replaced;
@@ -306,11 +281,8 @@ std::vector<std::shared_ptr<Instruction>> replaceSDiv(const SDiv &I) {
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceURemPow2(Value &n, uint64_t d) {
-    std::vector<std::shared_ptr<Instruction>> replaced;
-
-    replaced.push_back(std::make_shared<And>(share(n), n.type()->constant(d - 1)));
-
-    return replaced;
+    return std::vector<std::shared_ptr<Instruction>>() +
+           std::make_shared<And>(share(n), n.type()->constant(d - 1));
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceURemGeneral(Value &n, uint64_t d) {
@@ -321,8 +293,7 @@ std::vector<std::shared_ptr<Instruction>> replaceURemGeneral(Value &n, uint64_t 
         std::shared_ptr<Instruction> x1 = std::make_shared<Mul>(x, n.type()->constant(d));
         std::shared_ptr<Instruction> x2 = std::make_shared<Sub>(share(n), x1);
 
-        replaced.push_back(x1);
-        replaced.push_back(x2);
+        replaced += x1, x2;
     }
 
     return replaced;
@@ -358,8 +329,7 @@ std::vector<std::shared_ptr<Instruction>> replaceSRem(Value &n, int64_t d) {
         std::shared_ptr<Instruction> x1 = std::make_shared<Mul>(x, n.type()->constant(d));
         std::shared_ptr<Instruction> x2 = std::make_shared<Sub>(share(n), x1);
 
-        replaced.push_back(x1);
-        replaced.push_back(x2);
+        replaced += x1, x2;
     }
 
     return replaced;
