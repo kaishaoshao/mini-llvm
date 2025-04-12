@@ -56,43 +56,43 @@ define i32 @mul_2147483647(i32 %0) noinline {
   ret i32 %2
 }
 
-define i32 @mul_m1(i32 %0) noinline {
+define i32 @mul_n1(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -1
   ret i32 %2
 }
 
-define i32 @mul_m2(i32 %0) noinline {
+define i32 @mul_n2(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -2
   ret i32 %2
 }
 
-define i32 @mul_m3(i32 %0) noinline {
+define i32 @mul_n3(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -3
   ret i32 %2
 }
 
-define i32 @mul_m4(i32 %0) noinline {
+define i32 @mul_n4(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -4
   ret i32 %2
 }
 
-define i32 @mul_m100(i32 %0) noinline {
+define i32 @mul_n100(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -100
   ret i32 %2
 }
 
-define i32 @mul_m255(i32 %0) noinline {
+define i32 @mul_n255(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -255
   ret i32 %2
 }
 
-define i32 @mul_m256(i32 %0) noinline {
+define i32 @mul_n256(i32 %0) noinline {
 1:
   %2 = mul i32 %0, -256
   ret i32 %2
@@ -118,19 +118,19 @@ define i32 @main() {
   %16 = call i32 @printf(ptr @format, i32 %15)
   %17 = call i32 @mul_2147483647(i32 12345)
   %18 = call i32 @printf(ptr @format, i32 %17)
-  %19 = call i32 @mul_m1(i32 12345)
+  %19 = call i32 @mul_n1(i32 12345)
   %20 = call i32 @printf(ptr @format, i32 %19)
-  %21 = call i32 @mul_m2(i32 12345)
+  %21 = call i32 @mul_n2(i32 12345)
   %22 = call i32 @printf(ptr @format, i32 %21)
-  %23 = call i32 @mul_m3(i32 12345)
+  %23 = call i32 @mul_n3(i32 12345)
   %24 = call i32 @printf(ptr @format, i32 %23)
-  %25 = call i32 @mul_m4(i32 12345)
+  %25 = call i32 @mul_n4(i32 12345)
   %26 = call i32 @printf(ptr @format, i32 %25)
-  %27 = call i32 @mul_m100(i32 12345)
+  %27 = call i32 @mul_n100(i32 12345)
   %28 = call i32 @printf(ptr @format, i32 %27)
-  %29 = call i32 @mul_m255(i32 12345)
+  %29 = call i32 @mul_n255(i32 12345)
   %30 = call i32 @printf(ptr @format, i32 %29)
-  %31 = call i32 @mul_m256(i32 12345)
+  %31 = call i32 @mul_n256(i32 12345)
   %32 = call i32 @printf(ptr @format, i32 %31)
   ret i32 0
 }
