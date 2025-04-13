@@ -17,6 +17,7 @@ tests=(
     relational
     casting
     select
+    getelementptr
     max
     sum
     fibonacci

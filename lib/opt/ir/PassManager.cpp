@@ -6,6 +6,7 @@
 #include "mini-llvm/ir/Verify.h"
 #include "mini-llvm/opt/ir/ModuleTransform.h"
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
+#include "mini-llvm/opt/ir/passes/ArrayFlattening.h"
 #include "mini-llvm/opt/ir/passes/BasicBlockMerging.h"
 #include "mini-llvm/opt/ir/passes/BranchSimplification.h"
 #include "mini-llvm/opt/ir/passes/ConstantFolding.h"
@@ -37,12 +38,13 @@ void PassManager::run(Module &M) const {
         JumpThreading               pass3;
         BasicBlockMerging           pass4;
         UnreachableBlockElimination pass5;
-        AlgebraicSimplification     pass6;
-        ConstantFolding             pass7;
-        PoisonPropagation           pass8;
-        GlobalValueNumbering        pass9;
-        StrengthReduction           pass10(3, 20, 20);
-        FunctionInlining            pass11;
+        ArrayFlattening             pass6;
+        AlgebraicSimplification     pass7;
+        ConstantFolding             pass8;
+        PoisonPropagation           pass9;
+        GlobalValueNumbering        pass10;
+        StrengthReduction           pass11(3, 20, 20);
+        FunctionInlining            pass12;
 
         ModuleTransform *passes[] = {
             &pass1,
@@ -56,6 +58,7 @@ void PassManager::run(Module &M) const {
             &pass9,
             &pass10,
             &pass11,
+            &pass12,
         };
 
         for (ModuleTransform *pass : passes) {

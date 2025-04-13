@@ -106,6 +106,7 @@
 ### IR
 
 - `AlgebraicSimplification`
+- `ArrayFlattening`
 - `BasicBlockMerging`
 - `BranchSimplification`
 - `ConstantFolding`
