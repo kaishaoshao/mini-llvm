@@ -6,7 +6,6 @@
 #include <memory>
 #include <ranges>
 #include <string>
-#include <typeinfo>
 #include <utility>
 #include <vector>
 
@@ -95,17 +94,4 @@ bool ArrayConstant::equals(const Constant &other) const {
         if (*element1 != *element2) return false;
     }
     return true;
-}
-
-std::vector<std::shared_ptr<Constant>> ir::flatten(const Constant &C) {
-    std::vector<std::shared_ptr<Constant>> flattened;
-    if (auto *arrayConstant = dynamic_cast<const ArrayConstant *>(&C)) {
-        for (const Use<Constant> &element : elements(*arrayConstant)) {
-            std::vector<std::shared_ptr<Constant>> flattenedElement = flatten(*element);
-            flattened.insert(flattened.end(), flattenedElement.begin(), flattenedElement.end());
-        }
-    } else {
-        flattened.push_back(cast<Constant>(C.clone()));
-    }
-    return flattened;
 }

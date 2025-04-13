@@ -80,6 +80,4 @@ inline auto elements(const ArrayConstant &C) {
     return std::ranges::subrange(C.element_begin(), C.element_end());
 }
 
-std::vector<std::shared_ptr<Constant>> flatten(const Constant &C);
-
 } // namespace mini_llvm::ir

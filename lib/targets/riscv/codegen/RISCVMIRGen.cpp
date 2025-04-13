@@ -178,10 +178,20 @@ using namespace mini_llvm::mir::riscv;
 
 namespace {
 
+void flatten(const ir::Constant &C, std::vector<const ir::Constant *> &flattened) {
+    if (dynamic_cast<const ir::ArrayConstant *>(&C)) {
+        for (const ir::Use<ir::Constant> &element : ir::elements(*static_cast<const ir::ArrayConstant *>(&C))) {
+            flatten(*element, flattened);
+        }
+    } else {
+        flattened.push_back(&C);
+    }
+}
+
 class TypeVisitorImpl final : public ir::TypeVisitor {
 public:
     explicit TypeVisitorImpl(GlobalVar &globalVar,
-                             const std::vector<std::shared_ptr<ir::Constant>> &flattened)
+                             const std::vector<const ir::Constant *> &flattened)
         : globalVar_(globalVar), flattened_(flattened) {}
 
     void visitI1(const ir::I1 &) override {
@@ -214,13 +224,13 @@ public:
 
 private:
     GlobalVar &globalVar_;
-    const std::vector<std::shared_ptr<ir::Constant>> &flattened_;
+    const std::vector<const ir::Constant *> &flattened_;
 
     template <typename IConst, typename MConst, typename Integer>
     void visitIntegerType() {
         std::vector<Integer> elements;
-        for (const auto &element : flattened_) {
-            elements.push_back(static_cast<Integer>(static_cast<const IConst *>(&*element)->value()));
+        for (const ir::Constant *element : flattened_) {
+            elements.push_back(static_cast<Integer>(static_cast<const IConst *>(element)->value()));
         }
         globalVar_.setInitializer(std::make_unique<MConst>(std::move(elements)));
     }
@@ -229,7 +239,7 @@ private:
     void visitFloatingType() {
         std::vector<Integer> elements;
         for (const auto &element : flattened_) {
-            elements.push_back(std::bit_cast<Integer>(static_cast<const IConst *>(&*element)->value()));
+            elements.push_back(std::bit_cast<Integer>(static_cast<const IConst *>(element)->value()));
         }
         globalVar_.setInitializer(std::make_unique<MConst>(std::move(elements)));
     }
@@ -282,7 +292,8 @@ public:
         if (C == *C.type()->zeroValue()) {
             globalVar_.setInitializer(std::make_unique<ZeroConstant>(C.type()->size(8)));
         } else {
-            std::vector<std::shared_ptr<ir::Constant>> flattened = flatten(C);
+            std::vector<const ir::Constant *> flattened;
+            flatten(C, flattened);
 
             std::unique_ptr<ir::Type> type = C.type();
             while (dynamic_cast<const ir::ArrayType *>(&*type)) {
