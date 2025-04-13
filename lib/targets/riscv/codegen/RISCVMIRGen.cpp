@@ -81,6 +81,7 @@
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/ir/Type/I8.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
@@ -839,16 +840,21 @@ public:
         auto i = I.idx_begin();
         std::unique_ptr<ir::Type> type = I.sourceType();
 
-        for (;;) {
+        if (*type == ir::I8()) {
             std::shared_ptr<Register> idx = prepareRegister(**i);
-            std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
-            builder_.add(std::make_unique<LI>(8, tmp, std::make_unique<IntegerImmediate>(type->size(8))));
-            builder_.add(std::make_unique<Mul>(8, tmp, idx, tmp));
-            builder_.add(std::make_unique<Add>(8, dst, dst, tmp));
+            builder_.add(std::make_unique<Add>(8, dst, dst, idx));
+        } else {
+            for (;;) {
+                std::shared_ptr<Register> idx = prepareRegister(**i);
+                std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
+                builder_.add(std::make_unique<LI>(8, tmp, std::make_unique<IntegerImmediate>(type->size(8))));
+                builder_.add(std::make_unique<Mul>(8, tmp, idx, tmp));
+                builder_.add(std::make_unique<Add>(8, dst, dst, tmp));
 
-            ++i;
-            if (i == I.idx_end()) break;
-            type = static_cast<const ir::ArrayType *>(&*type)->elementType();
+                ++i;
+                if (i == I.idx_end()) break;
+                type = static_cast<const ir::ArrayType *>(&*type)->elementType();
+            }
         }
     }
 
