@@ -78,7 +78,7 @@ inline constexpr const char *specifier(ICmp::Condition cond) {
 }
 
 inline std::string ICmp::format() const {
-    return std::format("{:o} = icmp {} {} {:o}, {:o}", *this, specifier(cond()), *opType(), *lhs(), *rhs());
+    return std::format("{:o} = icmp {} {} {:o}, {:o}", *this, specifier(cond()), *lhs()->type(), *lhs(), *rhs());
 }
 
 } // namespace mini_llvm::ir

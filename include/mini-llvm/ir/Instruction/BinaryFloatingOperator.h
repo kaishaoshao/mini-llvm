@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <memory>
 #include <unordered_set>
 #include <utility>
@@ -24,11 +23,6 @@ public:
     template <typename Self>
     auto &rhs(this Self &&self) {
         return self.rhs_;
-    }
-
-    std::unique_ptr<Type> opType() const {
-        assert(*lhs()->type() == *rhs()->type());
-        return lhs()->type();
     }
 
     std::unordered_set<const UseBase *> operands() const override {

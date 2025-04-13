@@ -33,7 +33,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("{:o} = fadd {} {:o}, {:o}", *this, *opType(), *lhs(), *rhs());
+        return std::format("{:o} = fadd {} {:o}, {:o}", *this, *lhs()->type(), *lhs(), *rhs());
     }
 
     std::unique_ptr<Value> clone() const override {

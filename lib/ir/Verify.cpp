@@ -81,7 +81,7 @@ bool ir::verify(const Function &F) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
                     return false;
                 }
-                if (*op->opType() == Ptr()) {
+                if (*op->lhs()->type() == Ptr()) {
                     return false;
                 }
             }
@@ -89,7 +89,7 @@ bool ir::verify(const Function &F) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
                     return false;
                 }
-                if (*op->opType() == Ptr()) {
+                if (*op->lhs()->type() == Ptr()) {
                     return false;
                 }
             }

@@ -682,7 +682,7 @@ public:
     }
 
     void visitFCmp(const ir::FCmp &I) override {
-        Precision precision = static_cast<const ir::FloatingType *>(&*I.opType())->precision();
+        Precision precision = static_cast<const ir::FloatingType *>(&*I.lhs()->type())->precision();
         Condition cond;
         bool negate;
         switch (I.cond()) {
@@ -1066,7 +1066,7 @@ public:
             }
         }
         if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.cond())) {
-            int width = icmp->opType()->size(8);
+            int width = icmp->lhs()->type()->size(8);
             std::shared_ptr<Register> src1 = prepareRegister(*icmp->lhs()),
                                       src2 = prepareRegister(*icmp->rhs());
             Condition cond;
@@ -1120,7 +1120,7 @@ private:
 
     template <typename IInstr, typename MInstr>
     void visitBinaryIntegerArithmeticOperator(const IInstr &I) {
-        int bitWidth = I.opType()->sizeInBits(8);
+        int bitWidth = I.type()->sizeInBits(8);
         ExtensionMode extensionMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
@@ -1156,7 +1156,7 @@ private:
 
     template <typename IInstr, typename MInstr>
     void visitBinaryFloatingArithmeticOperator(const IInstr &I) {
-        Precision precision = static_cast<const ir::FloatingType *>(&*I.opType())->precision();
+        Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());

@@ -106,7 +106,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
 
             if (!dynamic_cast<const IntegerConstant *>(lhs) && lhs == rhs) {
                 if (dynamic_cast<const Add *>(op)) {
-                    Mul &mul = addToParent(*op, std::make_shared<Mul>(share(*const_cast<Value *>(lhs)), op->opType()->constant(2)));
+                    Mul &mul = addToParent(*op, std::make_shared<Mul>(share(*const_cast<Value *>(lhs)), op->lhs()->type()->constant(2)));
                     replaceAllUsesWith(*op, share(mul));
                     changed = true;
                     remove.push_back(op);

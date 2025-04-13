@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <format>
 #include <memory>
 #include <string>
@@ -39,11 +38,6 @@ public:
         return self.falseValue_;
     }
 
-    std::unique_ptr<Type> opType() const {
-        assert(*trueValue()->type() == *falseValue()->type());
-        return trueValue()->type();
-    }
-
     std::unordered_set<const UseBase *> operands() const override {
         return {&cond(), &trueValue(), &falseValue()};
     }
@@ -65,7 +59,7 @@ public:
     }
 
     std::unique_ptr<Type> type() const override {
-        return opType();
+        return trueValue()->type();
     }
 
     std::string format() const override {

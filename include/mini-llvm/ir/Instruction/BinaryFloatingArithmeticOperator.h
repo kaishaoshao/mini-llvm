@@ -12,7 +12,7 @@ namespace mini_llvm::ir {
 class BinaryFloatingArithmeticOperator : public BinaryFloatingOperator {
 public:
     std::unique_ptr<Type> type() const override {
-        return opType();
+        return lhs()->type();
     }
 
     // x op y == y op x
