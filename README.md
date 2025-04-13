@@ -113,6 +113,7 @@
 - `DeadCodeElimination`
 - `FunctionInlining`
 - `GlobalValueNumbering`
+- `InstructionCombining`
 - `JumpThreading`
 - `Mem2Reg`
 - `PoisonPropagation`

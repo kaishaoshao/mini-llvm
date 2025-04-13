@@ -13,6 +13,7 @@
 #include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
 #include "mini-llvm/opt/ir/passes/FunctionInlining.h"
 #include "mini-llvm/opt/ir/passes/GlobalValueNumbering.h"
+#include "mini-llvm/opt/ir/passes/InstructionCombining.h"
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
 #include "mini-llvm/opt/ir/passes/Mem2Reg.h"
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
@@ -39,12 +40,13 @@ void PassManager::run(Module &M) const {
         BasicBlockMerging           pass4;
         UnreachableBlockElimination pass5;
         ArrayFlattening             pass6;
-        AlgebraicSimplification     pass7;
-        ConstantFolding             pass8;
-        PoisonPropagation           pass9;
-        GlobalValueNumbering        pass10;
-        StrengthReduction           pass11(3, 20, 20);
-        FunctionInlining            pass12;
+        InstructionCombining        pass7;
+        AlgebraicSimplification     pass8;
+        ConstantFolding             pass9;
+        PoisonPropagation           pass10;
+        GlobalValueNumbering        pass11;
+        StrengthReduction           pass12(3, 20, 20);
+        FunctionInlining            pass13;
 
         ModuleTransform *passes[] = {
             &pass1,
@@ -59,6 +61,7 @@ void PassManager::run(Module &M) const {
             &pass10,
             &pass11,
             &pass12,
+            &pass13,
         };
 
         for (ModuleTransform *pass : passes) {
