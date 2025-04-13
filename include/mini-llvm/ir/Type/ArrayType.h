@@ -28,7 +28,7 @@ public:
     }
 
     int size() const override {
-        return elementType()->size() * static_cast<int>(numElements());
+        return static_cast<int>(numElements()) * elementType()->size();
     }
 
     int alignment() const override {
@@ -36,7 +36,7 @@ public:
     }
 
     int size(int pointerSize) const override {
-        return elementType()->size(pointerSize) * static_cast<int>(numElements());
+        return static_cast<int>(numElements()) * elementType()->size(pointerSize);
     }
 
     int alignment(int pointerSize) const override {
