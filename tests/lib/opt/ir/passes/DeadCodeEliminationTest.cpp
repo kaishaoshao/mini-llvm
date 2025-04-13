@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Verify.h"
 #include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
-#include "mini-llvm/opt/ir/Verify.h"
 #include "TestUtils.h"
 
 using ::testing::AllOf;

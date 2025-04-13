@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "mini-llvm/ir/Module.h"
+#include "mini-llvm/ir/Verify.h"
 #include "mini-llvm/opt/ir/ModuleTransform.h"
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 #include "mini-llvm/opt/ir/passes/BasicBlockMerging.h"
@@ -16,7 +17,6 @@
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 #include "mini-llvm/opt/ir/passes/StrengthReduction.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
-#include "mini-llvm/opt/ir/Verify.h"
 
 using namespace mini_llvm::ir;
 

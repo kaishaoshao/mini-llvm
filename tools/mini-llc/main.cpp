@@ -12,10 +12,10 @@
 
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/ir/Module.h"
+#include "mini-llvm/ir/Verify.h"
 #include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/mc/Program.h"
 #include "mini-llvm/opt/ir/PassManager.h"
-#include "mini-llvm/opt/ir/Verify.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"

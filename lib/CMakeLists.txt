@@ -35,6 +35,7 @@ add_library(mini-llvm
     ir/Type/Void.cpp
     ir/Use.cpp
     ir/Value.cpp
+    ir/Verify.cpp
     ir_reader/IRReader.cpp
     ir_reader/Lexer.cpp
     ir_reader/Parser.cpp
@@ -68,7 +69,6 @@ add_library(mini-llvm
     opt/ir/passes/StrengthReduction.cpp
     opt/ir/passes/UnreachableBlockElimination.cpp
     opt/ir/PassManager.cpp
-    opt/ir/Verify.cpp
     opt/mc/FragmentTransform.cpp
     opt/mc/passes/RedundantLabelElimination.cpp
     opt/mir/BasicBlockTransform.cpp
