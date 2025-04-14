@@ -142,8 +142,8 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
     predictor.runOnFunction(F);
 
     std::unordered_map<const BasicBlock *, int> indices;
-    for (auto [i, X] : std::views::enumerate(F)) {
-        indices.emplace(&X, i);
+    for (auto [i, B] : std::views::enumerate(F)) {
+        indices.emplace(&B, i);
     }
 
     std::vector<std::vector<double>> D(n, std::vector<double>(n, 1e+10));
