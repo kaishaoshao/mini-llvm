@@ -28,7 +28,7 @@ tests=(
     hanoi
     partition_function
     n_queens
-    array_sum
+    accumulate
     matmul
     edit_distance
     sieve_of_eratosthenes

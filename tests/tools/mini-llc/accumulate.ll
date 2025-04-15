@@ -4,7 +4,7 @@
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)
 
-define i32 @array_sum(ptr %0, i32 %1) {
+define i32 @accumulate(ptr %0, i32 %1) {
 2:
   %3 = alloca ptr
   %4 = alloca i32
@@ -48,7 +48,7 @@ define i32 @main() {
 0:
   %1 = alloca [8 x i32]
   %2 = call ptr @memcpy(ptr %1, ptr @a, i64 32)
-  %3 = call i32 @array_sum(ptr %1, i32 8)
+  %3 = call i32 @accumulate(ptr %1, i32 8)
   %4 = call i32 @printf(ptr @format, i32 %3)
   ret i32 0
 }
