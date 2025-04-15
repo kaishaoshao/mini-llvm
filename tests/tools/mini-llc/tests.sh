@@ -28,6 +28,10 @@ tests=(
     hanoi
     partition_function
     n_queens
+    xorshift32
+    xorshift64
+    splitmix64
+    pcg32
     accumulate
     matmul
     edit_distance
