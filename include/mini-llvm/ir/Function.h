@@ -37,6 +37,7 @@ public:
     using const_reverse_iterator = IndirectIterator<BasicBlockList::const_reverse_iterator, const BasicBlock>;
 
     Function(std::unique_ptr<FunctionType> functionType, Linkage linkage);
+    ~Function() override;
 
     std::unique_ptr<FunctionType> functionType() const {
         return cast<FunctionType>(functionType_->clone());

@@ -1,6 +1,5 @@
 #include "mini-llvm/ir/Constant/ArrayConstant.h"
 
-#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <memory>
@@ -22,10 +21,23 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
+namespace {
+
+bool isZeroInitializer(const ArrayConstant &C) {
+    for (const Use<Constant> &element : elements(C)) {
+        if (*element != *element->type()->zeroValue()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+} // namespace
+
 ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::shared_ptr<Constant>> elements)
         : type_(std::move(type)) {
-    assert(elements.size() <= type_->numElements());
 #ifndef NDEBUG
+    assert(elements.size() <= type_->numElements());
     for (const std::shared_ptr<Constant> &element : elements) {
         assert(*element->type() == *type_->elementType());
     }
@@ -41,15 +53,7 @@ ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::s
     }
 }
 
-namespace {
-
-bool isZeroInitializer(const ArrayConstant &C) {
-    return std::ranges::all_of(elements(C), [](const Use<Constant> &element) {
-        return *element == *element->type()->zeroValue();
-    });
-}
-
-} // namespace
+ArrayConstant::~ArrayConstant() = default;
 
 std::string ArrayConstant::format() const {
     if (isZeroInitializer(*this)) {

@@ -22,6 +22,8 @@ GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
     }
 }
 
+GlobalVar::~GlobalVar() = default;
+
 void GlobalVar::setInitializer(std::optional<std::shared_ptr<Constant>> initializer) {
     if (initializer) {
         if (initializer_) {
