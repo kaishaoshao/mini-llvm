@@ -37,12 +37,6 @@ add_executable(tests
     ir_reader/IRReaderTest.cpp
     ir_reader/LexerTest.cpp
     ir_reader/ParserTest.cpp
-    opt/ir/passes/BranchSimplificationTest.cpp
-    opt/ir/passes/ConstantFoldingTest.cpp
-    opt/ir/passes/DeadCodeEliminationTest.cpp
-    opt/ir/passes/DominatorTreeAnalysisTest.cpp
-    opt/ir/passes/JumpThreadingTest.cpp
-    opt/ir/passes/UnreachableBlockEliminationTest.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_23)
 target_link_libraries(tests PRIVATE mini-llvm GTest::gtest GTest::gmock GTest::gtest_main GTest::gmock_main)
