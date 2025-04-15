@@ -68,6 +68,7 @@ add_library(mini-llvm
     opt/ir/passes/JumpThreading.cpp
     opt/ir/passes/Mem2Reg.cpp
     opt/ir/passes/PoisonPropagation.cpp
+    opt/ir/passes/RedundantLoadElimination.cpp
     opt/ir/passes/StrengthReduction.cpp
     opt/ir/passes/UnreachableBlockElimination.cpp
     opt/ir/PassManager.cpp
