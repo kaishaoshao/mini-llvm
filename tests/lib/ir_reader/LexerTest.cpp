@@ -11,7 +11,7 @@ using namespace mini_llvm::ir;
 
 using enum Token::Kind;
 
-TEST(LexerTest, test00) {
+TEST(LexerTest, empty) {
     const char *input = "";
 
     std::vector<Token> expectedOutput{
@@ -21,7 +21,7 @@ TEST(LexerTest, test00) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test01) {
+TEST(LexerTest, comments) {
     const char *input = R"(
 ; Comment
 @test = ; Comment
@@ -44,7 +44,7 @@ global i32 42 ; Comment
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test02) {
+TEST(LexerTest, numberInt64Max) {
     const char *input = "9223372036854775807";
 
     std::vector<Token> expectedOutput{
@@ -55,7 +55,7 @@ TEST(LexerTest, test02) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test03) {
+TEST(LexerTest, numberInt64Min) {
     const char *input = "-9223372036854775808";
 
     std::vector<Token> expectedOutput{
@@ -66,7 +66,7 @@ TEST(LexerTest, test03) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test04) {
+TEST(LexerTest, numberUInt64Max) {
     const char *input = "18446744073709551615";
 
     std::vector<Token> expectedOutput{
@@ -77,7 +77,7 @@ TEST(LexerTest, test04) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test05) {
+TEST(LexerTest, numberInt64MaxHex) {
     const char *input = "0x7fffffffffffffff";
 
     std::vector<Token> expectedOutput{
@@ -88,7 +88,7 @@ TEST(LexerTest, test05) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test06) {
+TEST(LexerTest, numberInt64MinHex) {
     const char *input = "0x8000000000000000";
 
     std::vector<Token> expectedOutput{
@@ -99,7 +99,7 @@ TEST(LexerTest, test06) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test07) {
+TEST(LexerTest, numberUInt64MaxHex) {
     const char *input = "0xffffffffffffffff";
 
     std::vector<Token> expectedOutput{
@@ -110,7 +110,7 @@ TEST(LexerTest, test07) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test08) {
+TEST(LexerTest, label) {
     const char *input = "_test.42:";
 
     std::vector<Token> expectedOutput{
@@ -122,7 +122,7 @@ TEST(LexerTest, test08) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test09) {
+TEST(LexerTest, labelKeyword) {
     const char *input = "define:";
 
     std::vector<Token> expectedOutput{
@@ -134,7 +134,7 @@ TEST(LexerTest, test09) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test10) {
+TEST(LexerTest, labelNumber) {
     const char *input = "42:";
 
     std::vector<Token> expectedOutput{
@@ -146,7 +146,7 @@ TEST(LexerTest, test10) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test11) {
+TEST(LexerTest, localIdentifier) {
     const char *input = "%_test.42";
 
     std::vector<Token> expectedOutput{
@@ -158,7 +158,7 @@ TEST(LexerTest, test11) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test12) {
+TEST(LexerTest, localIdentifierKeyword) {
     const char *input = "@define";
 
     std::vector<Token> expectedOutput{
@@ -170,7 +170,7 @@ TEST(LexerTest, test12) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test13) {
+TEST(LexerTest, localIdentifierNumber) {
     const char *input = "%42";
 
     std::vector<Token> expectedOutput{
@@ -182,7 +182,7 @@ TEST(LexerTest, test13) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, test14) {
+TEST(LexerTest, string) {
     const char *input = R"(c"test\\42\0A\00")";
 
     std::vector<Token> expectedOutput{
