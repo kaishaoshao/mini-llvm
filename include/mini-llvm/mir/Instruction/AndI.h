@@ -19,8 +19,8 @@ public:
          std::shared_ptr<Register> dst,
          std::shared_ptr<Register> src1,
          std::unique_ptr<Immediate> src2,
-         ExtensionMode extensionMode = ExtensionMode::kNo)
-        : BinaryOperatorI(width, std::move(dst), std::move(src1), std::move(src2), extensionMode) {}
+         ExtensionMode extMode = ExtensionMode::kNo)
+        : BinaryOperatorI(width, std::move(dst), std::move(src1), std::move(src2), extMode) {}
 
     bool hasSideEffects() const override {
         return false;
@@ -28,7 +28,7 @@ public:
 
     std::unique_ptr<Instruction> clone() const override {
         return std::make_unique<AndI>(
-            width(), share(*dst()), share(*src1()), src2()->clone(), extensionMode());
+            width(), share(*dst()), share(*src1()), src2()->clone(), extMode());
     }
 
     void accept(InstructionVisitor &visitor) override {

@@ -38,8 +38,8 @@ public:
         return self.src2_;
     }
 
-    ExtensionMode extensionMode() const {
-        return extensionMode_;
+    ExtensionMode extMode() const {
+        return extMode_;
     }
 
     std::unordered_set<const RegisterOperand *> regOps() const override {
@@ -65,7 +65,7 @@ public:
     std::string format() const override {
         return std::format(
             "{}<{}> {}, {}, {}, {}",
-            mnemonic(), width(), *dst(), *src1(), *src2(), specifier(extensionMode()));
+            mnemonic(), width(), *dst(), *src1(), *src2(), specifier(extMode()));
     }
 
 protected:
@@ -73,19 +73,19 @@ protected:
                    std::shared_ptr<Register> dst,
                    std::shared_ptr<Register> src1,
                    std::shared_ptr<Register> src2,
-                   ExtensionMode extensionMode)
+                   ExtensionMode extMode)
         : width_(width),
           dst_(RegisterClass::kGPR, std::move(dst)),
           src1_(RegisterClass::kGPR, std::move(src1)),
           src2_(RegisterClass::kGPR, std::move(src2)),
-          extensionMode_(extensionMode) {}
+          extMode_(extMode) {}
 
     virtual const char *mnemonic() const = 0;
 
 private:
     int width_;
     RegisterOperand dst_, src1_, src2_;
-    ExtensionMode extensionMode_;
+    ExtensionMode extMode_;
 };
 
 } // namespace mini_llvm::mir

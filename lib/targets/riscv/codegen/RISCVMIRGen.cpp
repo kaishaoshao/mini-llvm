@@ -805,8 +805,8 @@ public:
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
             int width = I.type()->size(8);
-            ExtensionMode extensionMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
-            builder_.add(std::make_unique<Load>(width, std::move(dst), std::move(src), extensionMode));
+            ExtensionMode extMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
+            builder_.add(std::make_unique<Load>(width, std::move(dst), std::move(src), extMode));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.type())) {
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
             builder_.add(std::make_unique<FLoad>(precision, std::move(dst), std::move(src)));
@@ -1132,15 +1132,15 @@ private:
     template <typename IInstr, typename MInstr>
     void visitBinaryIntegerArithmeticOperator(const IInstr &I) {
         int bitWidth = I.type()->sizeInBits(8);
-        ExtensionMode extensionMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
+        ExtensionMode extMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
 
         if (bitWidth == 32) {
-            builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, extensionMode));
+            builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, extMode));
         } else {
-            builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, extensionMode));
+            builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, extMode));
             if (bitWidth < 64) {
                 builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
                 builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));

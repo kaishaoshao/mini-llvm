@@ -61,13 +61,13 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<AddI>(add->width(), share(*add->dst()), share(*add->src2()), std::move(imm), add->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<AddI>(add->width(), share(*add->dst()), share(*add->src2()), std::move(imm), add->extMode()));
                 }
             } else if (auto j = values.find(&*add->src2()); j != values.end()) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<AddI>(add->width(), share(*add->dst()), share(*add->src1()), std::move(imm), add->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<AddI>(add->width(), share(*add->dst()), share(*add->src1()), std::move(imm), add->extMode()));
                 }
             }
         } else if (auto *sub = dynamic_cast<const Sub *>(&*i)) {
@@ -75,7 +75,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= -value && -value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(-value);
-                    replace.emplace_back(i, std::make_unique<AddI>(sub->width(), share(*sub->dst()), share(*sub->src1()), std::move(imm), sub->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<AddI>(sub->width(), share(*sub->dst()), share(*sub->src1()), std::move(imm), sub->extMode()));
                 }
             }
         } else if (auto *and_ = dynamic_cast<const And *>(&*i)) {
@@ -83,13 +83,13 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<AndI>(and_->width(), share(*and_->dst()), share(*and_->src2()), std::move(imm), and_->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<AndI>(and_->width(), share(*and_->dst()), share(*and_->src2()), std::move(imm), and_->extMode()));
                 }
             } else if (auto j = values.find(&*and_->src2()); j != values.end()) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<AndI>(and_->width(), share(*and_->dst()), share(*and_->src1()), std::move(imm), and_->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<AndI>(and_->width(), share(*and_->dst()), share(*and_->src1()), std::move(imm), and_->extMode()));
                 }
             }
         } else if (auto *or_ = dynamic_cast<const Or *>(&*i)) {
@@ -97,13 +97,13 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<OrI>(or_->width(), share(*or_->dst()), share(*or_->src2()), std::move(imm), or_->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<OrI>(or_->width(), share(*or_->dst()), share(*or_->src2()), std::move(imm), or_->extMode()));
                 }
             } else if (auto j = values.find(&*or_->src2()); j != values.end()) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<OrI>(or_->width(), share(*or_->dst()), share(*or_->src1()), std::move(imm), or_->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<OrI>(or_->width(), share(*or_->dst()), share(*or_->src1()), std::move(imm), or_->extMode()));
                 }
             }
         } else if (auto *xor_ = dynamic_cast<const Xor *>(&*i)) {
@@ -111,13 +111,13 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<XorI>(xor_->width(), share(*xor_->dst()), share(*xor_->src2()), std::move(imm), xor_->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<XorI>(xor_->width(), share(*xor_->dst()), share(*xor_->src2()), std::move(imm), xor_->extMode()));
                 }
             } else if (auto j = values.find(&*xor_->src2()); j != values.end()) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<XorI>(xor_->width(), share(*xor_->dst()), share(*xor_->src1()), std::move(imm), xor_->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<XorI>(xor_->width(), share(*xor_->dst()), share(*xor_->src1()), std::move(imm), xor_->extMode()));
                 }
             }
         } else if (auto *shl = dynamic_cast<const SHL *>(&*i)) {
@@ -125,7 +125,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<SHLI>(shl->width(), share(*shl->dst()), share(*shl->src1()), std::move(imm), shl->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<SHLI>(shl->width(), share(*shl->dst()), share(*shl->src1()), std::move(imm), shl->extMode()));
                 }
             }
         } else if (auto *shrl = dynamic_cast<const SHRL *>(&*i)) {
@@ -133,7 +133,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<SHRLI>(shrl->width(), share(*shrl->dst()), share(*shrl->src1()), std::move(imm), shrl->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<SHRLI>(shrl->width(), share(*shrl->dst()), share(*shrl->src1()), std::move(imm), shrl->extMode()));
                 }
             }
         } else if (auto *shra = dynamic_cast<const SHRA *>(&*i)) {
@@ -141,7 +141,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                 int64_t value = j->second;
                 if (-2048 <= value && value <= 2047) {
                     std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
-                    replace.emplace_back(i, std::make_unique<SHRAI>(shra->width(), share(*shra->dst()), share(*shra->src1()), std::move(imm), shra->extensionMode()));
+                    replace.emplace_back(i, std::make_unique<SHRAI>(shra->width(), share(*shra->dst()), share(*shra->src1()), std::move(imm), shra->extMode()));
                 }
             }
         } else if (auto *mul = dynamic_cast<const Mul *>(&*i)) {
@@ -150,13 +150,13 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
                     int64_t value = j->second;
                     if (std::has_single_bit((uint64_t)value)) {
                         std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(std::countr_zero((uint64_t)value));
-                        replace.emplace_back(i, std::make_unique<SHLI>(mul->width(), share(*mul->dst()), share(*mul->src2()), std::move(imm), mul->extensionMode()));
+                        replace.emplace_back(i, std::make_unique<SHLI>(mul->width(), share(*mul->dst()), share(*mul->src2()), std::move(imm), mul->extMode()));
                     }
                 } else if (auto j = values.find(&*mul->src2()); j != values.end()) {
                     int64_t value = j->second;
                     if (std::has_single_bit((uint64_t)value)) {
                         std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(std::countr_zero((uint64_t)value));
-                        replace.emplace_back(i, std::make_unique<SHLI>(mul->width(), share(*mul->dst()), share(*mul->src1()), std::move(imm), mul->extensionMode()));
+                        replace.emplace_back(i, std::make_unique<SHLI>(mul->width(), share(*mul->dst()), share(*mul->src1()), std::move(imm), mul->extMode()));
                     }
                 }
             }

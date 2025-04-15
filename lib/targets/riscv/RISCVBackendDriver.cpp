@@ -91,10 +91,10 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         switch (physReg->Class()) {
                             case RegisterClass::kGPR: {
                                 int width = slot->size();
-                                ExtensionMode extensionMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
+                                ExtensionMode extMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
                                 builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
                                 builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
-                                builder.add(std::make_unique<Load>(width, std::move(dst), MemoryOperand(share(*t6())), extensionMode));
+                                builder.add(std::make_unique<Load>(width, std::move(dst), MemoryOperand(share(*t6())), extMode));
                                 break;
                             }
 

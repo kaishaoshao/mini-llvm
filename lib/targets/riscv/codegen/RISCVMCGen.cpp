@@ -453,20 +453,20 @@ public:
 
     void visitLoad(const mir::Load &I) override {
         int opcode;
-        if (I.extensionMode() == ExtensionMode::kNo) {
+        if (I.extMode() == ExtensionMode::kNo) {
             if (I.width() == 8) {
                 opcode = RISCV_LD;
             } else {
                 abort();
             }
-        } else if (I.extensionMode() == ExtensionMode::kSign) {
+        } else if (I.extMode() == ExtensionMode::kSign) {
             switch (I.width()) {
                 case 1: opcode = RISCV_LB; break;
                 case 2: opcode = RISCV_LH; break;
                 case 4: opcode = RISCV_LW; break;
                 default: abort();
             }
-        } else if (I.extensionMode() == ExtensionMode::kZero) {
+        } else if (I.extMode() == ExtensionMode::kZero) {
             switch (I.width()) {
                 case 1: opcode = RISCV_LBU; break;
                 case 2: opcode = RISCV_LHU; break;
@@ -678,7 +678,7 @@ private:
     template <int Opcode64>
     void visitUnaryOperator(const mir::UnaryOperator &I) {
         assert(I.width() == 8);
-        assert(I.extensionMode() == ExtensionMode::kNo);
+        assert(I.extMode() == ExtensionMode::kNo);
         int opcode = Opcode64;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -696,9 +696,9 @@ private:
         }
 #ifndef NDEBUG
         if (I.width() == 8) {
-            assert(I.extensionMode() == ExtensionMode::kNo);
+            assert(I.extMode() == ExtensionMode::kNo);
         } else {
-            assert(I.extensionMode() == ExtensionMode::kSign);
+            assert(I.extMode() == ExtensionMode::kSign);
         }
 #endif
         std::vector<std::unique_ptr<Operand>> operands;
@@ -711,7 +711,7 @@ private:
     template <int Opcode64>
     void visitBinaryBitwiseOperator(const mir::BinaryOperator &I) {
         assert(I.width() == 8);
-        assert(I.extensionMode() == ExtensionMode::kNo);
+        assert(I.extMode() == ExtensionMode::kNo);
         int opcode = Opcode64;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -730,9 +730,9 @@ private:
         }
 #ifndef NDEBUG
         if (I.width() == 8) {
-            assert(I.extensionMode() == ExtensionMode::kNo);
+            assert(I.extMode() == ExtensionMode::kNo);
         } else {
-            assert(I.extensionMode() == ExtensionMode::kSign);
+            assert(I.extMode() == ExtensionMode::kSign);
         }
 #endif
         std::vector<std::unique_ptr<Operand>> operands;
@@ -745,7 +745,7 @@ private:
     template <int Opcode64>
     void visitBinaryBitwiseOperatorI(const mir::BinaryOperatorI &I) {
         assert(I.width() == 8);
-        assert(I.extensionMode() == ExtensionMode::kNo);
+        assert(I.extMode() == ExtensionMode::kNo);
         int opcode = Opcode64;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));

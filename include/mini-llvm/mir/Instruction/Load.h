@@ -24,11 +24,11 @@ public:
     Load(int width,
          std::shared_ptr<Register> dst,
          MemoryOperand src,
-         ExtensionMode extensionMode = ExtensionMode::kNo)
+         ExtensionMode extMode = ExtensionMode::kNo)
         : width_(width),
           dst_(RegisterClass::kGPR, std::move(dst)),
           src_(std::move(src)),
-          extensionMode_(extensionMode) {}
+          extMode_(extMode) {}
 
     int width() const {
         return width_;
@@ -44,8 +44,8 @@ public:
         return self.src_;
     }
 
-    ExtensionMode extensionMode() const {
-        return extensionMode_;
+    ExtensionMode extMode() const {
+        return extMode_;
     }
 
     std::unordered_set<const RegisterOperand *> regOps() const override {
@@ -75,11 +75,11 @@ public:
     std::string format() const override {
         return std::format(
             "LOAD<{}> {}, {}, {}",
-            width(), *dst(), src(), specifier(extensionMode()));
+            width(), *dst(), src(), specifier(extMode()));
     }
 
     std::unique_ptr<Instruction> clone() const override {
-        return std::make_unique<Load>(width(), share(*dst()), src().clone(), extensionMode());
+        return std::make_unique<Load>(width(), share(*dst()), src().clone(), extMode());
     }
 
     void accept(InstructionVisitor &visitor) override {
@@ -94,7 +94,7 @@ private:
     int width_;
     RegisterOperand dst_;
     MemoryOperand src_;
-    ExtensionMode extensionMode_;
+    ExtensionMode extMode_;
 };
 
 } // namespace mini_llvm::mir
