@@ -206,6 +206,29 @@ define void @test() {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, namedVoid) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, unnamedNonVoid) {
+    const char *input = R"(
+define void @test() {
+0:
+    add i32 0, 0
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, callVoid) {
     const char *input = R"(
 define void @test1() {
