@@ -189,6 +189,12 @@ define void @test() {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, emptyFunctionBody) {
+    const char *input = "define void @test() {}";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, invalidInstructionMnemonic) {
     const char *input = R"(
 define void @test() {

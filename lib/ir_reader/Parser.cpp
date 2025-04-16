@@ -401,6 +401,9 @@ void Parser::parseFunctionBody(Function &F) {
         parseBasicBlock(*block);
         F.append(std::move(block));
     }
+    if (F.empty()) {
+        throw ParseException("function body cannot be empty", cursor_);
+    }
     ++cursor_;
 
     for (const auto &[symbol, value] : symbolTable_) {
