@@ -189,6 +189,17 @@ define void @test() {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, invalidInstructionMnemonic) {
+    const char *input = R"(
+define void @test() {
+0:
+    invalid
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, callVoid) {
     const char *input = R"(
 define void @test1() {

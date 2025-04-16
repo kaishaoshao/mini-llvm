@@ -393,7 +393,7 @@ void Parser::parseFunctionBody(Function &F) {
     cursor_ = start;
 
     while (cursor_->kind != kRightBrace) {
-        if (cursor_->kind != kName) {
+        if (!(cursor_->kind == kName && std::next(cursor_)->kind == kColon)) {
             throw ParseException("expected label name", cursor_);
         }
         Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(cursor_->value)};
