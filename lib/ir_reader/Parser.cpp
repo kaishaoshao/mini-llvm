@@ -890,10 +890,12 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             std::shared_ptr<Value> II = symbolTable_[symbol];
             if (typeid(*II) != typeid(Dummy)) {
                 throw ParseException("redefinition of local identifier", cursor_);
-            } else {
-                replaceAllUsesWith(*II, I);
-                symbolTable_[symbol] = I;
             }
+            if (*II->type() != *I->type()) {
+                throw ParseException("inconsistent type", cursor_);
+            }
+            replaceAllUsesWith(*II, I);
+            symbolTable_[symbol] = I;
         } else {
             symbolTable_[symbol] = I;
         }

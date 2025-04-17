@@ -292,3 +292,27 @@ define void @test(i1 %0) {
 
     EXPECT_TRUE(parseModule(input));
 }
+
+TEST(IRReaderTest, selfReferentialAdd) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = add i32 %1, %1
+    ret void
+}
+)";
+
+    parseModule(input);
+}
+
+TEST(IRReaderTest, selfReferentialSExt) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = sext i32 %1 to i64
+    ret void
+}
+)";
+
+    parseModule(input);
+}
