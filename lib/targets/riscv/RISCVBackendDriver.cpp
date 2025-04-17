@@ -205,6 +205,11 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         epilogueBlock = &B;
                     }
                 }
+                if (!epilogueBlock) {
+                    epilogueBlock = &F.append();
+                    epilogueBlock->append(std::make_unique<Marker>(RISCVMIRGen::kRestore));
+                    epilogueBlock->append(std::make_unique<RISCVRet>(0, 0));
+                }
 
                 BasicBlock::const_iterator savePos,
                                            restorePos;
