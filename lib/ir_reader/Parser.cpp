@@ -244,8 +244,7 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
         }
         linkage = Linkage::kInternal;
         ++cursor_;
-    }
-    if (cursor_->kind == kPrivate) {
+    } else if (cursor_->kind == kPrivate) {
         if (!hasInitializer) {
             throw ParseException("invalid linkage", cursor_);
         }
@@ -285,8 +284,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
         }
         linkage = Linkage::kInternal;
         ++cursor_;
-    }
-    if (cursor_->kind == kPrivate) {
+    } else if (cursor_->kind == kPrivate) {
         if (!hasBody) {
             throw ParseException("invalid linkage", cursor_);
         }

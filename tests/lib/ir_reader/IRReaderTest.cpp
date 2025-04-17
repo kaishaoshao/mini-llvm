@@ -68,6 +68,12 @@ TEST(IRReaderTest, externalPrivateGlobal) {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, internalPrivateGlobal) {
+    const char *input = "@test = internal private global i32 42";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, declareInternal) {
     const char *input = "declare internal void @test()";
 
@@ -76,6 +82,17 @@ TEST(IRReaderTest, declareInternal) {
 
 TEST(IRReaderTest, declarePrivate) {
     const char *input = "declare private void @test()";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, defineInternalPrivate) {
+    const char *input = R"(
+define internal private void @test() {
+0:
+    ret void
+}
+)";
 
     EXPECT_FALSE(parseModule(input));
 }
