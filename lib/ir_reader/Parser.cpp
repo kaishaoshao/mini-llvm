@@ -239,10 +239,16 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
 
     Linkage linkage = Linkage::kExternal;
     if (cursor_->kind == kInternal) {
+        if (!hasInitializer) {
+            throw ParseException("invalid linkage", cursor_);
+        }
         linkage = Linkage::kInternal;
         ++cursor_;
     }
     if (cursor_->kind == kPrivate) {
+        if (!hasInitializer) {
+            throw ParseException("invalid linkage", cursor_);
+        }
         linkage = Linkage::kPrivate;
         ++cursor_;
     }
