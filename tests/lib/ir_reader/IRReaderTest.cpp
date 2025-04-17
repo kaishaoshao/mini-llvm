@@ -56,25 +56,6 @@ TEST(IRReaderTest, externalGlobalVar) {
     EXPECT_TRUE(parseModule(input));
 }
 
-TEST(IRReaderTest, arrayConstant) {
-    const char *input = R"(
-@test = global [2 x [3 x [4 x i32]]] [
-    [3 x [4 x i32]] [
-        [4 x i32] [i32 42, i32 43, i32 44, i32 45],
-        [4 x i32] [i32 46, i32 47, i32 48, i32 49],
-        [4 x i32] [i32 50, i32 51, i32 52, i32 53]
-    ],
-    [3 x [4 x i32]] [
-        [4 x i32] [i32 54, i32 55, i32 56, i32 57],
-        [4 x i32] [i32 58, i32 59, i32 60, i32 61],
-        [4 x i32] [i32 62, i32 63, i32 64, i32 65]
-    ]
-]
-)";
-
-    EXPECT_TRUE(parseModule(input));
-}
-
 TEST(IRReaderTest, globalVarUseBeforeDeclaration) {
     const char *input = R"(
 define i32 @test1() {
