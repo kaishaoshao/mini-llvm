@@ -77,6 +77,13 @@ bool ir::verify(const Function &F) {
 
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
+            if (!dynamic_cast<const Phi *>(&I)) {
+                for (const UseBase *op : I.operands()) {
+                    if (&**op == &I) {
+                        return false;
+                    }
+                }
+            }
             if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
                     return false;
