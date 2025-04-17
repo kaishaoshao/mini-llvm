@@ -274,10 +274,16 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
 
     Linkage linkage = Linkage::kExternal;
     if (cursor_->kind == kInternal) {
+        if (!hasBody) {
+            throw ParseException("invalid linkage", cursor_);
+        }
         linkage = Linkage::kInternal;
         ++cursor_;
     }
     if (cursor_->kind == kPrivate) {
+        if (!hasBody) {
+            throw ParseException("invalid linkage", cursor_);
+        }
         linkage = Linkage::kPrivate;
         ++cursor_;
     }

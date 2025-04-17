@@ -56,6 +56,18 @@ TEST(IRReaderTest, externalGlobalVar) {
     EXPECT_TRUE(parseModule(input));
 }
 
+TEST(IRReaderTest, declareInternal) {
+    const char *input = "declare internal void @test()";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, declarePrivate) {
+    const char *input = "declare private void @test()";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, globalVarUseBeforeDeclaration) {
     const char *input = R"(
 define i32 @test1() {
