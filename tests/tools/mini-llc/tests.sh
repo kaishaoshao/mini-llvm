@@ -5,6 +5,7 @@ set -e
 tests=(
     circular_call
     irreducible_cfg
+    self_loop
     phi_lost_copy
     phi_swap
     many_args

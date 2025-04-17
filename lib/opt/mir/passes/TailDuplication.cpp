@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/mir/passes/TailDuplication.h"
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -26,12 +27,16 @@ bool TailDuplication::runOnFunction(Function &F) {
         }
 
         for (BasicBlock &B : F) {
-            if (!successors(B).empty() && B.size() <= threshold_) {
+            if (!successors(B).empty() && B.size() > 1 && B.size() <= threshold_) {
                 for (BasicBlock *pred : predecessors[&B]) {
                     if (dynamic_cast<const Br *>(&pred->back())) {
-                        pred->removeLast();
+                        std::vector<std::unique_ptr<Instruction>> tmp;
                         for (Instruction &I : B) {
-                            pred->append(I.clone());
+                            tmp.push_back(I.clone());
+                        }
+                        pred->removeLast();
+                        for (auto &I : tmp) {
+                            pred->append(std::move(I));
                         }
                         changed2 = true;
                     }
