@@ -30,10 +30,6 @@ tests=(
     hanoi
     partition_function
     n_queens
-    xorshift32
-    xorshift64
-    splitmix64
-    pcg32
     accumulate
     matmul
     edit_distance
@@ -50,6 +46,10 @@ tests=(
     tarjan_strongly_connected_components
     dijkstra_shortest_paths
     gaussian_elimination
+    xorshift32
+    xorshift64
+    splitmix64
+    pcg32
 )
 
 for test_name in "${tests[@]}"; do
