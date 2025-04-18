@@ -106,37 +106,41 @@
 ### IR
 
 - `AlgebraicSimplification`
+- `ArrayFlattening`
 - `BasicBlockMerging`
 - `BranchSimplification`
 - `ConstantFolding`
 - `DeadCodeElimination`
+- `DeadStoreElimination`
 - `FunctionInlining`
 - `GlobalValueNumbering`
+- `InstructionCombining`
 - `JumpThreading`
 - `Mem2Reg`
 - `PoisonPropagation`
+- `RedundantLoadElimination`
 - `StrengthReduction`
 - `UnreachableBlockElimination`
 
 ### MIR
 
 - `BasicBlockMerging`
+- `BasicBlockReordering`
 - `CopyPropagation`
 - `DeadCodeElimination`
 - `JumpThreading`
 - `NullOperationElimination`
 - `RegisterReuse`
 - `StackOffsetEvaluation`
+- `TailDuplication`
 - `UnreachableBlockElimination`
 - `ZeroRegisterReplacement`
-- `riscv64`
-  - `RISCVConstantPropagation`
+- `RISCVConstantPropagation` (`riscv64`)
 
 ### MC
 
 - `RedundantLabelElimination`
-- `riscv64`
-  - `RISCVFallthrough`
+- `RISCVFallthrough` (`riscv64`)
 
 ## Supported Register Allocators (Work in Progress)
 
@@ -216,9 +220,9 @@ export MINI_LLC_COMMAND="../../../build/tools/mini-llc/mini-llc"
 export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
 export EMULATOR_COMMAND="qemu-riscv64"
 export DIFF_COMMAND="diff"
-export MINI_LLC_TIMEOUT=20
-export LINKER_TIMEOUT=20
-export EMULATOR_TIMEOUT=20
+export MINI_LLC_TIMEOUT=60
+export LINKER_TIMEOUT=60
+export EMULATOR_TIMEOUT=60
 ./test-all.sh --target=riscv64
 ```
 
